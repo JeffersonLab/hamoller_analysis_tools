@@ -1,0 +1,90 @@
+#ifndef TTRAIN_H
+#define TTRAIN_H
+
+#include <vector>
+#include <string>
+#include <algorithm>
+#include <map>
+#include <TFile.h>
+#include <TChain.h>
+#include <TObject.h>
+#include <TTree.h>
+#include <TString.h>
+#include <TSystem.h>
+#include <TLeaf.h>
+
+class TTrain : public TObject {
+
+public:
+    TTrain();
+    ~TTrain();
+   
+   //Optionally create TChain in parallel
+   TChain *ch;
+
+    struct BranchInfo {
+        std::string name;
+        void* address;
+    };
+
+    // Add file containing a tree
+    bool AddFile(const TString& filename,
+                 const TString& treename = "T");
+    // Create TTrain from run number
+   void SetUpTTrain(int runnum, const char* fnamebase, bool tchain = false);
+   
+    // Entry handling
+    Long64_t GetEntry(Long64_t globalEntry);
+    Long64_t GetEntries() const { return fTotalEntries; }
+
+    // Tree info
+    TTree*  GetCurrentTree() const { return fCurrentTree; }
+    int     GetCurrentTreeNumber() const { return fCurrentTreeNumber; }
+    std::vector<TFile*> GetVectorOfFiles();
+    TString GetCurrentFileName() const;
+    int     GetNtrees() const { return fTrees.size(); }
+
+   
+    // Branch handling
+    template <typename T>
+    int SetBranchAddress(const char* name, T* addr)
+    {
+       // Store address
+       BranchInfo info;
+       info.name = name;
+       info.address = static_cast<void*>(addr);
+       fBranches.push_back(info);
+       
+       // Apply to current tree
+       if (fCurrentTree) {
+	  return fCurrentTree->SetBranchAddress(name, addr);
+       }
+       
+       return 0;
+    }
+
+    void SetBranchStatus(const char* bname, Bool_t status = kTRUE);
+private:
+
+    void UpdateTree(Long64_t globalEntry);
+    void ApplyBranchAddresses();
+    std::map<TString, Bool_t> fBranchStatus;
+    std::vector<TFile*>   fFiles;
+    std::vector<TTree*>   fTrees;
+    std::vector<Long64_t> fTreeOffsets;  // starting entry of each tree
+    std::vector<BranchInfo> fBranches;
+
+    Long64_t fTotalEntries;
+    int      fRun;
+
+    // Current state
+    int      fCurrentTreeNumber;
+    TTree*   fCurrentTree;
+    Long64_t fCurrentTreeStart;
+    Long64_t fCurrentTreeEnd;
+    Long64_t fLastGlobalEntry;
+
+   ClassDef(TTrain,1)
+};
+
+#endif

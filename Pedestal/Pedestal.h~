@@ -1,0 +1,43 @@
+#ifndef PEDESTAL_H
+#define PEDESTAL_H
+
+#include <vector>
+#include <cmath>
+#include <iostream>
+#include <TChain.h>
+#include "TTrain.h"
+
+class Pedestal {
+public:
+    Pedestal(int ndet = 8);
+
+    void Initialize(TTrain* tr);  // pass 1
+    void SetupWaveChain(TTrain* tr);
+
+    void GetPedestals(Long64_t entry,
+                      std::vector<double>& ped_out,
+                      std::vector<bool>& corrected);
+
+private:
+    int fNDET;
+
+    double fMean[16];
+    double fSigma[16];
+
+
+    // Waveform chain (heavy branch only)
+    TChain* fWaveChain;
+
+    // Waveform buffers
+    std::vector<double> fSamples;
+    int fNsampTotal;
+
+    // Branch variables
+    static constexpr int fNDET = 16;
+    double ped[fNDET];
+    int pedchan[fNDET];
+    int npedchan;
+    void ComputeStats(TTrain* tr);
+};
+
+#endif

@@ -1,0 +1,8 @@
+/adaqfs/home/hamoller/jonesdc/macros/GoodHelicities/build/CMakeFiles/G__GoodHelicities.dir
+/adaqfs/home/hamoller/jonesdc/macros/GoodHelicities/build/CMakeFiles/GoodHelicities.dir
+/adaqfs/home/hamoller/jonesdc/macros/GoodHelicities/build/CMakeFiles/edit_cache.dir
+/adaqfs/home/hamoller/jonesdc/macros/GoodHelicities/build/CMakeFiles/rebuild_cache.dir
+/adaqfs/home/hamoller/jonesdc/macros/GoodHelicities/build/CMakeFiles/list_install_components.dir
+/adaqfs/home/hamoller/jonesdc/macros/GoodHelicities/build/CMakeFiles/install.dir
+/adaqfs/home/hamoller/jonesdc/macros/GoodHelicities/build/CMakeFiles/install/local.dir
+/adaqfs/home/hamoller/jonesdc/macros/GoodHelicities/build/CMakeFiles/install/strip.dir

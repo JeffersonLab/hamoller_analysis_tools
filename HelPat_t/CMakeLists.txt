@@ -1,0 +1,23 @@
+cmake_minimum_required(VERSION 3.14)
+project(HelPat_t)
+
+find_package(ROOT REQUIRED)
+
+include(${ROOT_USE_FILE})
+
+include_directories(${ROOT_INCLUDE_DIRS})
+
+ROOT_GENERATE_DICTIONARY(G__HelPat_t
+    ${CMAKE_CURRENT_SOURCE_DIR}/HelPat_t.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/LinkDef.h
+)
+
+add_library(HelPat_t SHARED
+    HelPat_t.cxx
+    G__HelPat_t.cxx
+)
+
+target_link_libraries(HelPat_t ${ROOT_LIBRARIES})
+
+install(TARGETS HelPat_t DESTINATION lib)
+install(FILES HelPat_t.h DESTINATION include)

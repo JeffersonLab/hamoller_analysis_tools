@@ -1,0 +1,65 @@
+GoodHelicities class is designed to cycle over a Root TTrain and find the good helicities. A TTrain is a custom class that has a list of TTrees and
+files similar to a TChain which keeps track of which file to load and reinitiates all branch address setting when a new file/TTree is loaded. It was
+required because TChain could not set the branch addresses for complex variables like fEvtHeader.fEvtTime.
+
+Installation follows the usual CMake process (depends on HelPat and TTrain already being installed and libraries available):
+Inside GoodHelicities directory
+>mkdir build
+>cd build
+>cmake ..
+>make
+
+
+struct HelPat_t {
+   Long64_t pattern_start{0}; //Entry number of pattern start (last event inside Tsettle)
+   Long64_t pattern_end{0};   //Entry number of pattern end (last event before Tsettle)
+
+   std::vector<Long64_t> window_start; //array of entry numbers of helicity window starts (last event inside Tsettle at beginning of helicity window)
+   std::vector<Long64_t> window_end;   //array of entry numbers of helicity window starts (last event before next Tsettle)
+   std::vector<bool>     helicity;     //array of true helicities (not delayed)
+
+   int  polarity{0};          //polarity of pattern +/-1
+   bool complete{false};      //has correct number of helicity states from given pattern
+   bool sequenceOK{false};    //has helicity sequence correct for given pattern
+   bool timingOK{false};      //timing between windows consistent with 1/TsettleFrequency
+   bool predictedOK{false};   //sequence of random helicity patterns consistent with helicity sequence predictor
+}
+
+Main methods for GoodHelicities:
+GoodHelicities::FindGoodHelicities() Returns a vector of type HelPat that has elements as shown above. This is the method that does the primary
+                                     processing. Other methods are used to set up the class before calling this method.
+GoodHelicities::SetTsettleFrequency(double freq) set helicity flip frequency. Used to check for missing helicity windows.
+GoodHelicities::SetPatternType() "pair","quartet","octet","hexoquad","octoquad" or "toggle"
+GoodHelicities::SetDelayWindows() number of windows reported helicity is delayed
+GoodHelicities::SetNMaxPulse() sets the maximum number of pulses that the firmware is set to find per event readout (default 4)
+GoodHelicities::SetADCthreshold() optionally sets the ADC threshold for finding an MPS, QRT or helicity
+GoodHelicities::SetNSA() set number of samples included in pulse integral after threshold crossing (NSA config file parameter). Used only for pedestal subtraction.
+GoodHelicities::SetNSB() set number of samples included in pulse integral before threshold crossing (NSB config file parameter). Used only for pedestal subtraction.
+GoodHelicities::SetNPED() set number of samples used in finding pedestals. Used only for pedestal subtraction.
+GoodHelicities::SetNChannels(double nch) set number of physical FADC channels being read out
+
+There is also an included class::LFSR30 (30 bit linear feedback shift register) for predicting the helicity after initial 30 pattern sequence is given.
+
+Example use:
+GoodHelicities *gh = new GoodHelicities();
+gh->SetPatterType("quartet");
+gh->SetTsettleFreq(29.5596);
+gh->SetNchannels(16);
+gh->SetNMaxPulse(4);
+int run = 249;
++TTrain* tree = new TTrain();
+for (int x = 0; x <= 100; ++x) {
+    TString filename(Form("%s/%s%i",
+                          gSystem->Getenv("HAMOLLER_ROOTFILE_DIR"),
+                          fnameform, run));
+    if (x > 0) filename += Form("_%i", x);
+    filename += ".root";
+
+    cout << filename << endl;
+
+    if (gSystem->AccessPathName(filename)) break;
+
+    tree->AddFile(filename, "T");
+}
+gh->FindGoodHelicities(tree);
+const vector<HelPat_t>& patterns = gh->GetPatterns();

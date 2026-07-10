@@ -1,0 +1,4 @@
+[ libHelPat_t.so ]
+# List of selected classes
+class HelPat_t
+header HelPat_t.h

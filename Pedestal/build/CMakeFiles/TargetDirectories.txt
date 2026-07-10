@@ -1,0 +1,4 @@
+/adaqfs/home/hamoller/jonesdc/macros/Pedestal/build/CMakeFiles/G__Pedestal.dir
+/adaqfs/home/hamoller/jonesdc/macros/Pedestal/build/CMakeFiles/Pedestal.dir
+/adaqfs/home/hamoller/jonesdc/macros/Pedestal/build/CMakeFiles/edit_cache.dir
+/adaqfs/home/hamoller/jonesdc/macros/Pedestal/build/CMakeFiles/rebuild_cache.dir

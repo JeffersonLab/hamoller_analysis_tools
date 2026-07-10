@@ -1,0 +1,28 @@
+cmake_minimum_required(VERSION 3.10)
+project(Pedestal)
+
+find_package(ROOT REQUIRED COMPONENTS RIO Tree Hist)
+
+include(${ROOT_USE_FILE})
+
+include_directories(include)
+
+set(SOURCES
+    src/Pedestal.cxx
+)
+
+set(HEADERS
+    include/Pedestal.h
+)
+
+ROOT_GENERATE_DICTIONARY(G__Pedestal
+    ${HEADERS}
+    LINKDEF LinkDef.h
+)
+
+add_library(Pedestal SHARED
+    ${SOURCES}
+    G__Pedestal.cxx
+)
+
+target_link_libraries(Pedestal ${ROOT_LIBRARIES})

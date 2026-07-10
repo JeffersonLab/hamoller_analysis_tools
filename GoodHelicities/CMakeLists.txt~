@@ -1,0 +1,43 @@
+cmake_minimum_required(VERSION 3.14)
+project(GoodHelicities)
+
+find_package(ROOT REQUIRED COMPONENTS RIO Tree)
+
+include(${ROOT_USE_FILE})
+
+include_directories(
+    ${ROOT_INCLUDE_DIRS}
+    /adaqfs/home/hamoller/jonesdc/macros/TTrain
+    /adaqfs/home/hamoller/jonesdc/macros/pattern_t
+)
+
+link_directories(
+  /adaqfs/home/hamoller/jonesdc/macros/TTrain
+  /adaqfs/home/hamoller/jonesdc/macros/pattern_t/build
+
+)
+
+# Generate ROOT dictionary
+ROOT_GENERATE_DICTIONARY(G__GoodHelicities
+    ${CMAKE_CURRENT_SOURCE_DIR}/GoodHelicities.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/LinkDef.h
+)
+
+add_library(GoodHelicities SHARED
+    GoodHelicities.cxx
+    G__GoodHelicities.cxx
+)
+
+target_link_libraries(GoodHelicities
+    ${ROOT_LIBRARIES}
+    TTrain
+    pattern_t
+)
+target_include_directories(GoodHelicities PRIVATE
+    ${ROOT_INCLUDE_DIRS}
+    ${CMAKE_CURRENT_SOURCE_DIR}
+    /adaqfs/home/hamoller/jonesdc/macros/TTrain
+    /adaqfs/home/hamoller/jonesdc/macros/pattern_t
+)
+install(TARGETS GoodHelicities DESTINATION lib)
+install(FILES GoodHelicities.h DESTINATION include)

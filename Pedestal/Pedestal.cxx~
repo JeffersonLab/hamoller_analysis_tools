@@ -1,0 +1,185 @@
+#include "Pedestal.h"
+
+#include <TFile.h>
+#include <TTree.h>
+#include <TChain.h>
+#include <TH1D.h>
+#include <TSystem.h>
+
+#include <iostream>
+#include <cmath>
+#include <map>
+
+Pedestal::Pedestal(int ndet)
+: fNDET(ndet), fMean(ndet,0), fSigma(ndet,0)
+{}
+
+void Pedestal::GetPedestals(TTrain* tr, int runnum)
+{
+    if(!tr){
+        std::cout<<"[Pedestal] No TTrain provided\n";
+        return;
+    }
+
+    Long64_t nentries = tr->GetEntries();
+
+    //--------------------------------------------------
+    // PASS 1: pedestal distributions
+    //--------------------------------------------------
+    Double_t ped[64], pedchan[64];
+    Int_t npedchan;
+
+    tr->SetBranchStatus("*",0);
+    tr->SetBranchStatus("M.cal.ped",1);
+    tr->SetBranchStatus("M.cal.chan",1);
+    tr->SetBranchStatus("Ndata.M.cal.chan",1);
+
+    tr->SetBranchAddress("M.cal.ped", ped);
+    tr->SetBranchAddress("M.cal.chan", pedchan);
+    tr->SetBranchAddress("Ndata.M.cal.chan", &npedchan);
+
+    TH1D* hPed[8];
+    for(int i=0;i<fNDET;i++){
+        hPed[i] = new TH1D(Form("hPed_%d",i),"",200,0,10000);
+    }
+
+    std::cout<<"[Pedestal] Pass 1 (statistics)\n";
+
+    for(Long64_t i=0;i<nentries;i++){
+        tr->GetEntry(i);
+
+        for(int k=0;k<npedchan;k++){
+            int ch = (int)pedchan[k];
+            if(ch>=fNDET) continue;
+            hPed[ch]->Fill(ped[k]);
+        }
+    }
+
+    for(int i=0;i<fNDET;i++){
+        fMean[i]  = hPed[i]->GetMean();
+        fSigma[i] = hPed[i]->GetStdDev();
+
+        std::cout<<"Ch "<<i<<" : "
+                 <<fMean[i]<<" +/- "<<fSigma[i]<<"\n";
+    }
+
+    //--------------------------------------------------
+    // Build waveform chain (samples only)
+    //--------------------------------------------------
+    TChain *ch_wave = new TChain("T");
+
+    for(auto f : tr->GetVectorOfFiles()){
+        ch_wave->Add(f->GetName());
+    }
+
+    Double_t samples[8192];
+    Int_t nsamp_total;
+    Int_t samp_chan[64];
+    Int_t nsamp_chan;
+
+    ch_wave->SetBranchStatus("*",0);
+    ch_wave->SetBranchStatus("M.cal.samples",1);
+    ch_wave->SetBranchStatus("Ndata.M.cal.samples",1);
+    ch_wave->SetBranchStatus("M.cal.chan",1);
+    ch_wave->SetBranchStatus("Ndata.M.cal.chan",1);
+
+    ch_wave->SetBranchAddress("M.cal.samples", samples);
+    ch_wave->SetBranchAddress("Ndata.M.cal.samples", &nsamp_total);
+    ch_wave->SetBranchAddress("M.cal.chan", samp_chan);
+    ch_wave->SetBranchAddress("Ndata.M.cal.chan", &nsamp_chan);
+
+    //--------------------------------------------------
+    // Create friend tree
+    //--------------------------------------------------
+    std::string fname(gSystem->Getenv("HAMOLLER_ROOTFILE_DIR"));
+    fname += "/PedestalFriend_";
+    fname += std::to_string(runnum) + ".root";
+
+    TFile *fout = TFile::Open(fname.c_str(),"RECREATE");
+    TTree *tfriend = new TTree("Ped","Pedestal corrections");
+
+    double ped_corr[MAXPED];
+    int    ped_corr_chan[MAXPED];
+    bool   ped_flag[MAXPED];
+    int    nped_corr;
+
+    tfriend->Branch("nped_corr", &nped_corr, "nped_corr/I");
+    tfriend->Branch("ped_corr", ped_corr, "ped_corr[nped_corr]/D");
+    tfriend->Branch("ped_corr_chan", ped_corr_chan, "ped_corr_chan[nped_corr]/I");
+    tfriend->Branch("ped_flag", ped_flag, "ped_flag[nped_corr]/O");
+
+    //--------------------------------------------------
+    // PASS 2: correction
+    //--------------------------------------------------
+    std::cout<<"[Pedestal] Pass 2 (corrections)\n";
+
+    for(Long64_t i=0;i<nentries;i++){
+        tr->GetEntry(i);
+
+        nped_corr = 0;
+        bool needSamples = false;
+
+        // detect bad pedestals
+        for(int k=0;k<npedchan;k++){
+            int ch = (int)pedchan[k];
+            if(ch>=fNDET) continue;
+            if(nped_corr >= MAXPED) break;
+
+            bool isBad = fabs(ped[k] - fMean[ch]) > 5*fSigma[ch];
+
+            ped_flag[nped_corr] = isBad;
+            ped_corr_chan[nped_corr] = ch;
+
+            if(isBad) needSamples = true;
+
+            nped_corr++;
+        }
+
+        // load waveform only if needed
+        if(needSamples){
+            ch_wave->GetEntry(i);
+        }
+
+        int Nsamp = (nsamp_chan>0) ? nsamp_total/nsamp_chan : 0;
+
+        // map channel → waveform index
+        std::map<int,int> chanToIndex;
+        if(needSamples){
+            for(int k=0;k<nsamp_chan;k++){
+                chanToIndex[samp_chan[k]] = k;
+            }
+        }
+
+        // compute corrected pedestals
+        for(int k=0;k<nped_corr;k++){
+            int ch = ped_corr_chan[k];
+
+            if(!ped_flag[k]){
+                ped_corr[k] = ped[k]*fPEDFRAC;
+            } else {
+                int idx = chanToIndex[ch];
+                int offset = idx * Nsamp;
+
+                double ped_end = 0;
+                for(int j=0;j<4;j++){
+                    ped_end += samples[offset + Nsamp - 1 - j];
+                }
+
+                ped_corr[k] = ped_end / 4.0;
+            }
+        }
+
+        tfriend->Fill();
+
+        if(i % 1000000 == 0)
+            std::cout<<"Processed "<<i<<"\n";
+    }
+
+    //--------------------------------------------------
+    // Write file
+    //--------------------------------------------------
+    tfriend->Write();
+    fout->Close();
+
+    std::cout<<"[Pedestal] Saved friend tree: "<<fname<<"\n";
+}

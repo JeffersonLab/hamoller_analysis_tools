@@ -1,0 +1,4 @@
+[ libPedestal.so ]
+# List of selected classes
+class Pedestal
+header Pedestal.h

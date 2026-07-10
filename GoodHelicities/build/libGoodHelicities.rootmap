@@ -1,0 +1,5 @@
+[ libGoodHelicities.so ]
+# List of selected classes
+class GoodHelicities
+class window_t
+header GoodHelicities.h

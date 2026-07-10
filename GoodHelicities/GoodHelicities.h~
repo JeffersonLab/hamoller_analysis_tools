@@ -1,0 +1,140 @@
+#ifndef GOODHELICITIES_H
+#define GOODHELICITIES_H
+
+#include <TTree.h>
+#include <TObject.h>
+#include <TTrain.h>
+#include <TBuffer.h>
+#include <HelPat_t.h>
+#include <vector>
+#include <string>
+#include <cstdint>
+
+// =============================
+// ROOT-Streamable Types
+// =============================
+
+struct window_t {
+   Long64_t start{0};                // Entry number at start of helicity window. Last event inside Tsettle 
+                                     // chosen to provide more accurate timing information to check if 
+                                     // consistent with period of 1/TsettleFreq i.e. no missing windows.
+
+   Long64_t end{0};                  // Entry number at end of helicity window. Last event before Tsettle.
+
+   double start_time{0};             // Time of start event in seconds.
+
+   bool reportedHelicity{false};     // Delayed reported helicity for this window.
+
+   bool trueHelicity{false};         // Actual helicity taken from N-delay helicity windows ahead.
+
+   bool trueHelicityFound{false};    // Successfully found helicity from N-delay windows ahead.
+                                     // Correct delta_t for N-delay windows verified.
+
+   bool hasQRT{false};               // Window is a QRT window signaling the beginning of a pattern.
+
+   bool hasTsettle{false};           // Tsettle period found at beginning of helicity window.
+
+   bool timingOK{false};             // Start times between current and previous windows consistent with
+                                     // 1/TsettleFreq.
+
+   ClassDef(window_t,1);
+};
+
+class GoodHelicities : public TObject {
+
+public:
+
+    // =============================
+    // Constructors
+    // =============================
+
+    GoodHelicities();
+    virtual ~GoodHelicities();
+
+    const std::vector<HelPat_t>& GetPatterns() const;
+    std::unique_ptr<TTrain> train;
+
+    // =============================
+    // Helicity board configuration
+    // =============================
+
+    void SetPatternType(const std::string& type);
+    void SetDelayWindows(int d);
+    void SetTsettleFrequency(double freq);
+
+    // =============================
+    // Main processing
+    // =============================
+
+    double GetADCchanThreshold() const;
+    double GetSumThreshold() const;
+    double GetCoincWindow() const;
+    double GetSumTimeDiff() const;
+    void CreateTTrain(int run, const char* fnamebase = "fadcV2_moller_analyzer_");
+    void SetADCchanThreshold(double thresh);
+    void SetSumThreshold(double thresh);
+    void SetCoincWindow(double dt);
+    void SetSumTimeDiff(double dt);
+    void FillLeftRightSumTree(int runnum, const char* fnamebase = "fadcV2_moller_analyzer_");
+    void FillLeftRightSumTree(TTrain *ch, int runnum);
+    void FindGoodHelicities(int runnum, const char* fnamebase = "fadcV2_moller_analyzer_",
+			    bool ped_sub=false);
+    void FindGoodHelicities(TTrain* ch, bool ped_sub=false);
+    void ClearPatterns();
+    void SavePatterns(int run);
+    void SetNSA(double nsa);
+    void SetNSB(double nsb);
+    void SetNPED(double nsb);
+    void SetRunNumber(int run);
+    void SetOverwrite(bool over);
+
+    // =============================
+    // Helicity sign predictor
+    // =============================
+
+    std::vector<int> GetBasePattern(const std::string& type) const;
+
+    class LFSR30 {
+    public:
+        uint32_t state{0};
+        bool seeded{false};
+        int bit_count = 0;
+       
+        void SeedBit(int bit);
+        void Seed(const std::vector<int>& bits);
+        int  Next();
+        void Reset();
+    };
+
+    private:
+
+    // =============================
+    // Member Data
+    // =============================
+
+    static constexpr double kError = -99999;
+    static constexpr int fNMAXPULSE = 4;
+    static constexpr int fNDET = 8;//PMT channels
+    static constexpr int fNCHAN = 16;
+    static constexpr int fNMAXCHAN = fNCHAN*fNMAXPULSE;
+    bool fOverwrite = true;
+    std::vector<HelPat_t> fPatterns;
+    std::string fPatternType{"quartet"};
+    int    fRun = 0;
+    int    fDelayWindows{8};
+    double fTsettleFreq{29.5596};
+    double fSumThreshold{90}; // ADC integral left/right sum threshold
+    double fADCthreshold{20}; // ADC integral individual channel threshold
+    double fNSA = 9;  // Number of FADC samples after threshold crossing included in integral
+    double fNSB = 4;  // Number of FADC samples before threshold crossing included in integral
+    double fNPED = 4; // Number of FADC samples from start of window included in pedestal integral
+    double fPEDFRAC = (fNSA+fNSB)/fNPED; // Multiply pedestal by this to subtract from FADC integrals
+    double fCOINC_DT = 10.0; // Maximum coincidence window in nanoseconds
+    double fSUM_DT = 5.0;    // Maximum time difference in nanoseconds between events to be
+                             // included in left or right sums
+    double fMeanTrigTime[fNDET]={};
+  
+    ClassDef(GoodHelicities,1);
+};
+
+#endif // GOODHELICITIES_H
