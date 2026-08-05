@@ -62,17 +62,17 @@ CREATE TABLE IF NOT EXISTS DAQ_config (
     ped12 DOUBLE, ped13 DOUBLE, ped14 DOUBLE, ped15 DOUBLE,
     
     CONSTRAINT fk_daq_run FOREIGN KEY (run_number) 
-        REFERENCES Run_info(run_number) ON DELETE CASCADE ON UPDATE CASCADE
+        REFERENCES Run_info(run_number)
 ) ENGINE=InnoDB;
 
 -- 3. EPICS_data Table
 CREATE TABLE IF NOT EXISTS EPICS_data (
 -- Primary Run Identifiers
-    id_epics_run             INT(11) NOT NULL PRIMARY KEY COMMENT 'Run ID',
+    run_nuber                INT UNSIGNED PRIMARY KEY, NOT NULL COMMENT 'Run ID',
     epics_run_type           VARCHAR(255) DEFAULT NULL COMMENT 'Run type',
     epics_run_start          DATETIME DEFAULT NULL COMMENT 'Run start timestamp',
     epics_run_end            DATETIME DEFAULT NULL COMMENT 'Run end timestamp',
-    epics_run_length         TIME DEFAULT NULL COMMENT 'Run length',
+    epics_run_length         INT UNSIGNED NULL COMMENT 'Run length in seconds',
 
     -- Accelerator & Beam Energy
     epics_E_beam             FLOAT(10,5) DEFAULT NULL COMMENT 'Beam energy, MeV Hall A [PV: HALLA:p]',
@@ -198,7 +198,7 @@ CREATE TABLE IF NOT EXISTS EPICS_data (
     epics_det_hv_ch8         FLOAT(10,5) DEFAULT NULL COMMENT 'HA Moller HV Readback Ch 8 (V) [PV: IHVHAPOL:03:007:VMon]',
 
     CONSTRAINT fk_epics_run FOREIGN KEY (run_number) 
-        REFERENCES Run_info(run_number) ON DELETE CASCADE ON UPDATE CASCADE
+        REFERENCES Run_info(run_number)
 ) ENGINE=InnoDB;
 
 -- 4. Analysis Table
@@ -213,7 +213,7 @@ CREATE TABLE IF NOT EXISTS Analysis (
     A_q DOUBLE,
     
     CONSTRAINT fk_analysis_run FOREIGN KEY (run_number) 
-        REFERENCES Run_info(run_number) ON DELETE CASCADE ON UPDATE CASCADE
+        REFERENCES Run_info(run_number)
 ) ENGINE=InnoDB;
 
 EOF
