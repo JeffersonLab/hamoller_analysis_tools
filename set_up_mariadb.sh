@@ -31,6 +31,11 @@ CREATE TABLE IF NOT EXISTS Run_info (
         'Threshold check',
         'Other'
     ) NOT NULL DEFAULT 'Other',
+    quality ENUM(
+    'Good', 
+    'Bad', 
+    'Suspect',
+    'Undetermined') NOT NULL DEFAULT 'Undetermined',
     comment TEXT
 ) ENGINE=InnoDB;
 
@@ -38,19 +43,19 @@ CREATE TABLE IF NOT EXISTS Run_info (
 CREATE TABLE IF NOT EXISTS DAQ_config (
     run_number INT UNSIGNED PRIMARY KEY,
     
-    -- Prescales (Unsigned positive integers < 60000)
-    prescale0 SMALLINT UNSIGNED CHECK (prescale0 < 60000),
-    prescale1 SMALLINT UNSIGNED CHECK (prescale1 < 60000),
-    prescale2 SMALLINT UNSIGNED CHECK (prescale2 < 60000),
-    prescale3 SMALLINT UNSIGNED CHECK (prescale3 < 60000),
-    prescale4 SMALLINT UNSIGNED CHECK (prescale4 < 60000),
-    prescale5 SMALLINT UNSIGNED CHECK (prescale5 < 60000),
-    prescale6 SMALLINT UNSIGNED CHECK (prescale6 < 60000),
+    -- Trigger Prescales
+    prescale0 INT,
+    prescale1 INT,
+    prescale2 INT,
+    prescale3 INT,
+    prescale4 INT,
+    prescale5 INT,
+    prescale6 INT,
     
-    -- FADC250 & Trigger Parameters
-    NSA SMALLINT UNSIGNED CHECK (NSA < 60000),
-    NSB SMALLINT UNSIGNED CHECK (NSB < 60000),
-    PTW SMALLINT UNSIGNED CHECK (PTW < 60000),
+    -- FADC250 Configuration Parameters
+    NSA SMALLINT UNSIGNED CHECK (NSA < 600),
+    NSB SMALLINT UNSIGNED CHECK (NSB < 600),
+    PTW SMALLINT UNSIGNED CHECK (PTW < 600),
     w_width SMALLINT UNSIGNED CHECK (w_width < 60000),
     w_offset SMALLINT UNSIGNED CHECK (w_offset < 60000),
     trig_width SMALLINT UNSIGNED CHECK (trig_width < 60000),
