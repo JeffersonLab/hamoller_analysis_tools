@@ -20,8 +20,10 @@ USE hamoller_db;
 -- 1. Run_info Table
 CREATE TABLE IF NOT EXISTS Run_info (
     run_number INT UNSIGNED PRIMARY KEY,
-    start_time VARCHAR(50), -- Fits Linux 'date' default string (e.g., "Fri Jul 31 16:54:21 EDT 2026")
-    end_time VARCHAR(50),
+    run_group INT UNSIGNED,
+    run_experiment VARCHAR(255) COMMENT 'Name of experiment',
+    run_start VARCHAR(50) COMMENT 'Start of run time stamp', -- Fits Linux 'date' default string (e.g., "Fri Jul 31 16:54:21 EDT 2026")
+    run_end VARCHAR(50)COMMENT 'End of run time stamp',
     measurement_type ENUM(
         'Rate scan',
         'Polarization',
@@ -36,7 +38,19 @@ CREATE TABLE IF NOT EXISTS Run_info (
     'Bad', 
     'Suspect',
     'Undetermined') NOT NULL DEFAULT 'Undetermined',
+    beam_sigma_x FLOAT(10,5) COMMENT '1 sigma x-width (mm) of beam from harp scan',
+    beam_sigma_y FLOAT(10,5) COMMENT '1 sigma y-width (mm) of beam from harp scan',
+    requested_current FLOAT(10,5) COMMENT 'Requested beam current in microamperes',
+    target_pol FLOAT(10,8) COMMENT 'Calculated target polarization',
+    target_foil_avgT FLOAT(10,5) COMMENT 'Foil temperature in Kelvin weighted by beam intensity',
+    hallA_ambientT FLOAT(10,5) COMMENT 'Hall A ambient temperature in Kelvin',
+    run_qped SMALLINT COMMENT 'Charge pedestal in counts',
+    run_deadtime_tau_1 DOUBLE COMMENT 'Dead time constant (ns) for coinc-coinc pile up',
+    run_deadtime_tau_2 DOUBLE COMMENT 'Dead time constant (ns) for single-coinc pile up',
+    run_accid_tau DOUBLE COMMENT 'Accidental window width (ns)',	       
     comment TEXT
+    last_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP 
+        COMMENT 'Timestamp of last record update',
 ) ENGINE=InnoDB;
 
 -- 2. DAQ_config Table
@@ -52,22 +66,65 @@ CREATE TABLE IF NOT EXISTS DAQ_config (
     prescale5 INT,
     prescale6 INT,
     
-    -- FADC250 Configuration Parameters
-    FADC_ADC_MASK SMALLINT UNSIGNED,
-    FADC_TRG_MASK SMALLINT UNSIGNED,
-    FADC_NSA SMALLINT UNSIGNED,
-    FADC_NSB SMALLINT UNSIGNED,
-    FADC_ SMALLINT UNSIGNED,
-    PTW SMALLINT UNSIGNED CHECK (PTW < 600),
-    w_width SMALLINT UNSIGNED CHECK (w_width < 60000),
-    w_offset SMALLINT UNSIGNED CHECK (w_offset < 60000),
-    trig_width SMALLINT UNSIGNED CHECK (trig_width < 60000),
+-- Crate & Slot Identification
+    FADC_CRATE VARCHAR(255) DEFAULT NULL COMMENT 'Crate identifier or hostname (e.g., all, hapolmollervme.jlab.org)',
+    FADC_SLOT VARCHAR(255) DEFAULT NULL COMMENT 'Slot selection (e.g., all, 3)',
+
+    -- Channel Masks & Operating Modes
+    FADC_ADC_MASK VARCHAR(255) DEFAULT NULL COMMENT 'ADC channel enable mask',
+    FADC_TRG_MASK VARCHAR(255) DEFAULT NULL COMMENT 'Trigger channel enable mask',
+    FADC_TET_IGNORE_MASK VARCHAR(255) DEFAULT NULL COMMENT 'Force readout of channel mask (i.e. ignore threshold for readout)',
+    FADC_ALLCH_MODE VARCHAR(255) DEFAULT NULL COMMENT 'Set the FADC mode for each channel',
+
+    -- Windowing & Timing Definitions
+    FADC_W_OFFSET SMALLINT UNSIGNED DEFAULT NULL COMMENT 'Number of ns back from trigger point',
+    FADC_W_WIDTH SMALLINT UNSIGNED DEFAULT NULL COMMENT 'Number of ns to include in trigger window',
+    FADC_NSB SMALLINT UNSIGNED DEFAULT NULL COMMENT 'Time (units: ns) before threshold crossing to include in integral',
+    FADC_NSA SMALLINT UNSIGNED DEFAULT NULL COMMENT 'Time (units: ns) after threshold crossing to include in integral',
+
+    -- Peak Processing & Pedestal Limits
+    FADC_NPEAK SMALLINT UNSIGNED DEFAULT NULL COMMENT 'Number of Pulses allowed for each window',
+    FADC_NPED SMALLINT UNSIGNED DEFAULT NULL COMMENT 'Number of samples included in the pedestal sum',
+    FADC_MAXPED SMALLINT UNSIGNED DEFAULT NULL COMMENT 'Maximum value of sample to be included in pedestal sum (0--1023)',
+    FADC_NSAT SMALLINT UNSIGNED DEFAULT NULL COMMENT 'Number of consecutive samples over threshold for valid pulse (1--4)',
+    FADC_TET SMALLINT UNSIGNED DEFAULT NULL COMMENT 'Fadc channel hit threshold (adc channel)',
+
+    -- DAC, Gain & Accumulator Configuration
+    FADC_DAC SMALLINT UNSIGNED DEFAULT NULL COMMENT 'Board DAC, one and the same for all 16 channels (DAC/mV)',
+    FADC_GAIN FLOAT(10,5) DEFAULT NULL COMMENT 'Board Gains, same for all channels (MeV/channel)',
+    FADC_ACCUMULATOR_SCALER_MODE_MASK VARCHAR(255) DEFAULT NULL COMMENT 'Accumulator scaler mode: 0=Default, TET based pulse integration, 1=Sum all samples',
+
+    -- Møller Discriminator & Trigger Logic Settings
+    FADC_MOLLER VARCHAR(255) DEFAULT NULL COMMENT 'L_OFFSET, R_OFFSET, L_SUM_THR, R_SUM_THR, DISC_WIDTH, DISC_MODE parameters',
+    FADC_L_OFFSET FLOAT(10,5) COMMENT 'ADC amplitude subtracted from the sum of the 4 left channels i.e. the sum pedestal',
+    FADC_R_OFFSET FLOAT(10,5) COMMENT 'ADC amplitude subtracted from the sum of the 4 right channels i.e. the sum pedestal',
+    FADC_DISC_WIDTH FLOAT(10,5) COMMENT 'Coincidence with in 4ns units (the left/right sum discriminator width)',
+FADC_DISC_MODE TINYINT(1) COMMENT 'When 0 the left/right sum discriminators are operating in non-updating mode',
+
+    FADC_L_SUM_THR FLOAT(10,5) COMMENT 'Threshold which the left sum must pass',
+    FADC_R_SUM_THR FLOAT(10,5) COMMENT 'Threshold which the right sum must pass',
+    FADC_TRG_SEL TINYINT(1) DEFAULT NULL COMMENT '0=multiplicity, 1=moller-AND, 2=moller-OR',
+    FADC_TRG_WIDTH SMALLINT UNSIGNED DEFAULT NULL COMMENT 'Stretches pulse width of channel over threshold in 4ns ticks for TI input',
+
+    -- Pedestal & Channel Threshold Overrides
+    FADC_ALLCH_PED TEXT DEFAULT NULL COMMENT 'Pedestal values for all 16 channels',
+    FADC_CH_PED VARCHAR(255) DEFAULT NULL COMMENT 'Specific channel pedestal override setting',
+    FADC_CH_TET VARCHAR(255) DEFAULT NULL COMMENT 'Specific channel hit threshold override setting'
     
     -- Pedestals (Ped0 ... Ped15)
-    ped0 DOUBLE, ped1 DOUBLE, ped2 DOUBLE, ped3 DOUBLE,
-    ped4 DOUBLE, ped5 DOUBLE, ped6 DOUBLE, ped7 DOUBLE,
-    ped8 DOUBLE, ped9 DOUBLE, ped10 DOUBLE, ped11 DOUBLE,
-    ped12 DOUBLE, ped13 DOUBLE, ped14 DOUBLE, ped15 DOUBLE,
+    FADC_ped0 DOUBLE, FADC_ped1 DOUBLE, FADC_ped2 DOUBLE,FADC_ ped3 DOUBLE,
+    FADC_ped4 DOUBLE, FADC_ped5 DOUBLE, FADC_ped6 DOUBLE, FADC_ped7 DOUBLE,
+    FADC_ped8 DOUBLE, FADC_ped9 DOUBLE, FADC_ped10 DOUBLE, FADC_ped11 DOUBLE,
+    FADC_ped12 DOUBLE, FADC_ped13 DOUBLE, FADC_ped14 DOUBLE, FADC_ped15 DOUBLE,
+
+    -- TET Thesholds (TET0 ... TET15)
+    FADC_TET0 DOUBLE, FADC_TET1 DOUBLE, FADC_TET2 DOUBLE,FADC_ TET3 DOUBLE,
+    FADC_TET4 DOUBLE, FADC_TET5 DOUBLE, FADC_TET6 DOUBLE, FADC_TET7 DOUBLE,
+    FADC_TET8 DOUBLE, FADC_TET9 DOUBLE, FADC_TET10 DOUBLE, FADC_TET11 DOUBLE,
+    FADC_TET12 DOUBLE, FADC_TET13 DOUBLE, FADC_TET14 DOUBLE, FADC_TET15 DOUBLE,
+
+    last_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP 
+        COMMENT 'Timestamp of last record update',
     
     CONSTRAINT fk_daq_run FOREIGN KEY (run_number) 
         REFERENCES Run_info(run_number)
@@ -204,6 +261,8 @@ CREATE TABLE IF NOT EXISTS EPICS_data (
     epics_det_hv_ch6         FLOAT(10,5) DEFAULT NULL COMMENT 'HA Moller HV Readback Ch 6 (V) [PV: IHVHAPOL:03:005:VMon]',
     epics_det_hv_ch7         FLOAT(10,5) DEFAULT NULL COMMENT 'HA Moller HV Readback Ch 7 (V) [PV: IHVHAPOL:03:006:VMon]',
     epics_det_hv_ch8         FLOAT(10,5) DEFAULT NULL COMMENT 'HA Moller HV Readback Ch 8 (V) [PV: IHVHAPOL:03:007:VMon]',
+    last_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP 
+        COMMENT 'Timestamp of last record update',
 
     CONSTRAINT fk_epics_run FOREIGN KEY (run_number) 
         REFERENCES Run_info(run_number)
@@ -212,13 +271,38 @@ CREATE TABLE IF NOT EXISTS EPICS_data (
 -- 4. Analysis Table
 CREATE TABLE IF NOT EXISTS Analysis (
     run_number INT UNSIGNED PRIMARY KEY,
-    left_rate DOUBLE,
-    right_rate DOUBLE,
-    coinc_rate DOUBLE,
-    accidental_rate DOUBLE,
-    current DOUBLE,
-    A_mol DOUBLE,
-    A_q DOUBLE,
+
+    -- Event Rates & Scalers
+    leftrate FLOAT DEFAULT NULL COMMENT 'Left detector hit rate',
+    leftrate_err FLOAT DEFAULT NULL COMMENT 'Error on left detector hit rate',
+    rightrate FLOAT DEFAULT NULL COMMENT 'Right detector hit rate',
+    rightrate_err FLOAT DEFAULT NULL COMMENT 'Error on right detector hit rate',
+    coinrate FLOAT DEFAULT NULL COMMENT 'Coincidence rate',
+    coinrate_err FLOAT DEFAULT NULL COMMENT 'Error on coincidence rate',
+    accrate FLOAT DEFAULT NULL COMMENT 'Accidental coincidence rate',
+    accrate_err FLOAT DEFAULT NULL COMMENT 'Error on accidental coincidence rate',
+
+    -- Diagnostics & Timing
+    bcm INT(11) DEFAULT NULL COMMENT 'Beam current monitor scaler counts',
+    clock INT(11) DEFAULT NULL COMMENT 'Clock scaler ticks',
+    deadtimetau FLOAT DEFAULT NULL COMMENT 'Dead time correction factor (tau)',
+
+    -- Asymmetries & Polarization Parameters
+    asym FLOAT DEFAULT NULL COMMENT 'Measured raw asymmetry',
+    asymerr FLOAT DEFAULT NULL COMMENT 'Statistical error on raw asymmetry',
+    anpow FLOAT(7,6) DEFAULT NULL COMMENT 'Analyzing power',
+    ptarg FLOAT(7,6) DEFAULT NULL COMMENT 'Target polarization',
+    pol FLOAT DEFAULT NULL COMMENT 'Extracted beam polarization',
+    polerr FLOAT DEFAULT NULL COMMENT 'Error on beam polarization',
+
+    -- Charge Asymmetry & Pedestals
+    qasym FLOAT DEFAULT NULL COMMENT 'Charge asymmetry',
+    qasymerr FLOAT DEFAULT NULL COMMENT 'Error on charge asymmetry',
+    qpedused FLOAT DEFAULT NULL COMMENT 'BCM pedestal value used in analysis',
+    qpedcalc FLOAT(7,6) DEFAULT NULL COMMENT 'Calculated BCM pedestal value',
+
+    last_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP 
+        COMMENT 'Timestamp of last record update',
     
     CONSTRAINT fk_analysis_run FOREIGN KEY (run_number) 
         REFERENCES Run_info(run_number)
