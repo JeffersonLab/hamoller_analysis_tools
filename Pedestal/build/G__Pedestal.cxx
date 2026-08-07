@@ -35,7 +35,7 @@
 #include "TDataMember.h"
 
 // Header files passed as explicit arguments
-#include "/adaqfs/home/hamoller/jonesdc/macros/Pedestal/Pedestal.h"
+#include "/adaqfs/home/hamoller/hamoller_analysis_tools/Pedestal/Pedestal.h"
 
 // Header files passed via #pragma extra_include
 
@@ -152,15 +152,15 @@ namespace ROOT {
 namespace {
   void TriggerDictionaryInitialization_libPedestal_Impl() {
     static const char* headers[] = {
-"/adaqfs/home/hamoller/jonesdc/macros/Pedestal/Pedestal.h",
+"/adaqfs/home/hamoller/hamoller_analysis_tools/Pedestal/Pedestal.h",
 nullptr
     };
     static const char* includePaths[] = {
 "/adaqfs/apps/ROOT/6.40-02/el9/RelWithDebInfo/include",
-"/adaqfs/home/hamoller/jonesdc/macros/Pedestal/include",
-"/adaqfs/home/hamoller/jonesdc/macros/Pedestal",
+"/adaqfs/home/hamoller/hamoller_analysis_tools/Pedestal/include",
+"/adaqfs/home/hamoller/hamoller_analysis_tools/Pedestal",
 "/adaqfs/apps/ROOT/6.40-02/el9/RelWithDebInfo/include",
-"/adaqfs/home/hamoller/jonesdc/macros/Pedestal/build/",
+"/adaqfs/home/hamoller/hamoller_analysis_tools/Pedestal/build/",
 nullptr
     };
     static const char* fwdDeclCode = R"DICTFWDDCLS(
@@ -171,7 +171,7 @@ nullptr
 #pragma clang diagnostic ignored "-Wignored-attributes"
 #pragma clang diagnostic ignored "-Wreturn-type-c-linkage"
 extern int __Cling_AutoLoading_Map;
-class  __attribute__((annotate("$clingAutoload$/adaqfs/home/hamoller/jonesdc/macros/Pedestal/Pedestal.h")))  Pedestal;
+class  __attribute__((annotate("$clingAutoload$/adaqfs/home/hamoller/hamoller_analysis_tools/Pedestal/Pedestal.h")))  Pedestal;
 #pragma diagnostic pop
 )DICTFWDDCLS";
     static const char* payloadCode = R"DICTPAYLOAD(
@@ -183,7 +183,7 @@ class  __attribute__((annotate("$clingAutoload$/adaqfs/home/hamoller/jonesdc/mac
 
 #define _BACKWARD_BACKWARD_WARNING_H
 // Inline headers
-#include "/adaqfs/home/hamoller/jonesdc/macros/Pedestal/Pedestal.h"
+#include "/adaqfs/home/hamoller/hamoller_analysis_tools/Pedestal/Pedestal.h"
 
 #undef  _BACKWARD_BACKWARD_WARNING_H
 )DICTPAYLOAD";

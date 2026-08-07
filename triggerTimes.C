@@ -30,18 +30,22 @@ void triggerTimes(int run, int pmtsActive=8, bool saveFlag=false, int binNum=480
    // -----------------------------
    // TTrain lifted from Don's code
    // -----------------------------
-   const char* fnameform = "fadcV2_moller_analyzer_";
+   const char* fnamebase = "fadcV2_moller_analyzer_";
    TTrain* tree = new TTrain();
-   for (int x = 0; x <= 100; ++x) {
-      TString filename(Form("%s/%s%i",
-			    gSystem->Getenv("HAMOLLER_ROOTFILE_DIR"),
-			    fnameform, run));
-      if (x > 0) filename += Form("_%i", x);
-      filename += ".root";
-      cout << filename << endl;
-      if (gSystem->AccessPathName(filename)) break;
-      tree->AddFile(filename, "T");
-   } //End TTrain
+   for (int seg = 0; seg < 100; ++seg) {
+      for (int x = 0; x < 100; ++x) {
+	 TString filename(Form("%s/%s%i.%i",
+			       gSystem->Getenv("HAMOLLER_ROOTFILE_DIR"),
+			       fnamebase, run, seg));
+	 if (x > 0) filename += Form("_%i", x);
+	 filename += ".root";
+
+	 if (gSystem->AccessPathName(filename)) break;
+	 std::cout << filename << std::endl;
+
+	 tree->AddFile(filename, "T");
+      }
+   }//End TTrain
 
    Long64_t nTreeEntries = tree->GetEntries();
    cout<<"nTreeEntries: "<<nTreeEntries<<endl;

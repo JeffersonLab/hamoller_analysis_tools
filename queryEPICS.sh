@@ -37,5 +37,5 @@ while read -r line; do
     echo -e "$PV\t$VALUE" >> "$OUTPUT_FILE"
 
 done < "$INPUT_FILE"
-
+chmod 444 "$OUTPUT_FILE"
 echo "Done. Results saved in $OUTPUT_FILE"

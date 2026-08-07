@@ -31,7 +31,31 @@ void adcSpectraV2(int run, int pmtsActive=8,int binNum=3000, int histRange=12000
    // -----------------------------
    // TTrain lifted from Don's code
    // -----------------------------
-   const char* fnameform = "fadcV2_moller_analyzer_";
+   const char* fnamebase = "fadcV2_moller_analyzer_";
+   TTrain* tree = new TTrain();
+   for (int seg = 0; seg < 100; ++seg) {
+      for (int x = 0; x < 100; ++x) {
+	 TString filename(Form("%s/%s%i.%i",
+			       gSystem->Getenv("HAMOLLER_ROOTFILE_DIR"),
+			       fnamebase, run, seg));
+	 if (x > 0) filename += Form("_%i", x);
+	 filename += ".root";
+	 
+	 if (gSystem->AccessPathName(filename)) break;
+	 std::cout << filename << std::endl;
+
+	 tree->AddFile(filename, "T");
+      }
+   }
+
+   Long64_t nTreeEntries = tree->GetEntries();
+   std::cout << nTreeEntries << " total entries." << std::endl;
+   if (nTreeEntries == 0) {
+      std::cout << "No entries found. Exiting." << std::endl;
+      return;
+   }
+   
+   /*const char* fnameform = "fadcV2_moller_analyzer_";
    
    TTrain* tree = new TTrain();
    for (int x = 0; x <= 100; ++x) {
@@ -50,7 +74,7 @@ void adcSpectraV2(int run, int pmtsActive=8,int binNum=3000, int histRange=12000
    if (nTreeEntries == 0) {
       cout << "No entries found. Exiting." << endl;
       return;
-   }
+   }*/
 
    tree->SetBranchStatus("*", 0);
    

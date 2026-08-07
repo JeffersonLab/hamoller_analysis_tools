@@ -35,7 +35,7 @@
 #include "TDataMember.h"
 
 // Header files passed as explicit arguments
-#include "/adaqfs/home/hamoller/jonesdc/macros/GoodHelicities/GoodHelicities.h"
+#include "/adaqfs/home/hamoller/hamoller_analysis_tools/GoodHelicities/GoodHelicities.h"
 
 // Header files passed via #pragma extra_include
 
@@ -320,16 +320,16 @@ namespace ROOT {
 namespace {
   void TriggerDictionaryInitialization_libGoodHelicities_Impl() {
     static const char* headers[] = {
-"/adaqfs/home/hamoller/jonesdc/macros/GoodHelicities/GoodHelicities.h",
+"/adaqfs/home/hamoller/hamoller_analysis_tools/GoodHelicities/GoodHelicities.h",
 nullptr
     };
     static const char* includePaths[] = {
 "/adaqfs/apps/ROOT/6.40-02/el9/RelWithDebInfo/include",
-"/adaqfs/home/hamoller/jonesdc/macros/TTrain",
-"/adaqfs/home/hamoller/jonesdc/macros/HelPat_t",
-"/adaqfs/home/hamoller/jonesdc/macros/GoodHelicities",
+"/adaqfs/home/hamoller/hamoller_analysis_tools/TTrain",
+"/adaqfs/home/hamoller/hamoller_analysis_tools/HelPat_t",
+"/adaqfs/home/hamoller/hamoller_analysis_tools/GoodHelicities",
 "/adaqfs/apps/ROOT/6.40-02/el9/RelWithDebInfo/include",
-"/adaqfs/home/hamoller/jonesdc/macros/GoodHelicities/build/",
+"/adaqfs/home/hamoller/hamoller_analysis_tools/GoodHelicities/build/",
 nullptr
     };
     static const char* fwdDeclCode = R"DICTFWDDCLS(
@@ -340,8 +340,8 @@ nullptr
 #pragma clang diagnostic ignored "-Wignored-attributes"
 #pragma clang diagnostic ignored "-Wreturn-type-c-linkage"
 extern int __Cling_AutoLoading_Map;
-struct  __attribute__((annotate("$clingAutoload$/adaqfs/home/hamoller/jonesdc/macros/GoodHelicities/GoodHelicities.h")))  window_t;
-class  __attribute__((annotate("$clingAutoload$/adaqfs/home/hamoller/jonesdc/macros/GoodHelicities/GoodHelicities.h")))  GoodHelicities;
+struct  __attribute__((annotate("$clingAutoload$/adaqfs/home/hamoller/hamoller_analysis_tools/GoodHelicities/GoodHelicities.h")))  window_t;
+class  __attribute__((annotate("$clingAutoload$/adaqfs/home/hamoller/hamoller_analysis_tools/GoodHelicities/GoodHelicities.h")))  GoodHelicities;
 #pragma diagnostic pop
 )DICTFWDDCLS";
     static const char* payloadCode = R"DICTPAYLOAD(
@@ -353,7 +353,7 @@ class  __attribute__((annotate("$clingAutoload$/adaqfs/home/hamoller/jonesdc/mac
 
 #define _BACKWARD_BACKWARD_WARNING_H
 // Inline headers
-#include "/adaqfs/home/hamoller/jonesdc/macros/GoodHelicities/GoodHelicities.h"
+#include "/adaqfs/home/hamoller/hamoller_analysis_tools/GoodHelicities/GoodHelicities.h"
 
 #undef  _BACKWARD_BACKWARD_WARNING_H
 )DICTPAYLOAD";

@@ -35,7 +35,7 @@
 #include "TDataMember.h"
 
 // Header files passed as explicit arguments
-#include "/adaqfs/home/hamoller/jonesdc/macros/HelPat_t/HelPat_t.h"
+#include "/adaqfs/home/hamoller/hamoller_analysis_tools/HelPat_t/HelPat_t.h"
 
 // Header files passed via #pragma extra_include
 
@@ -288,14 +288,14 @@ namespace ROOT {
 namespace {
   void TriggerDictionaryInitialization_libHelPat_t_Impl() {
     static const char* headers[] = {
-"/adaqfs/home/hamoller/jonesdc/macros/HelPat_t/HelPat_t.h",
+"/adaqfs/home/hamoller/hamoller_analysis_tools/HelPat_t/HelPat_t.h",
 nullptr
     };
     static const char* includePaths[] = {
 "/adaqfs/apps/ROOT/6.40-02/el9/RelWithDebInfo/include",
-"/adaqfs/home/hamoller/jonesdc/macros/HelPat_t",
+"/adaqfs/home/hamoller/hamoller_analysis_tools/HelPat_t",
 "/adaqfs/apps/ROOT/6.40-02/el9/RelWithDebInfo/include",
-"/adaqfs/home/hamoller/jonesdc/macros/HelPat_t/build/",
+"/adaqfs/home/hamoller/hamoller_analysis_tools/HelPat_t/build/",
 nullptr
     };
     static const char* fwdDeclCode = R"DICTFWDDCLS(
@@ -306,7 +306,7 @@ nullptr
 #pragma clang diagnostic ignored "-Wignored-attributes"
 #pragma clang diagnostic ignored "-Wreturn-type-c-linkage"
 extern int __Cling_AutoLoading_Map;
-struct  __attribute__((annotate("$clingAutoload$/adaqfs/home/hamoller/jonesdc/macros/HelPat_t/HelPat_t.h")))  HelPat_t;
+struct  __attribute__((annotate("$clingAutoload$/adaqfs/home/hamoller/hamoller_analysis_tools/HelPat_t/HelPat_t.h")))  HelPat_t;
 #pragma diagnostic pop
 )DICTFWDDCLS";
     static const char* payloadCode = R"DICTPAYLOAD(
@@ -318,7 +318,7 @@ struct  __attribute__((annotate("$clingAutoload$/adaqfs/home/hamoller/jonesdc/ma
 
 #define _BACKWARD_BACKWARD_WARNING_H
 // Inline headers
-#include "/adaqfs/home/hamoller/jonesdc/macros/HelPat_t/HelPat_t.h"
+#include "/adaqfs/home/hamoller/hamoller_analysis_tools/HelPat_t/HelPat_t.h"
 
 #undef  _BACKWARD_BACKWARD_WARNING_H
 )DICTPAYLOAD";

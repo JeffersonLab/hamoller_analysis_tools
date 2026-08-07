@@ -7,13 +7,13 @@ include(${ROOT_USE_FILE})
 
 include_directories(
     ${ROOT_INCLUDE_DIRS}
-    /adaqfs/home/hamoller/jonesdc/macros/TTrain
-    /adaqfs/home/hamoller/jonesdc/macros/HelPat_t
+    /adaqfs/home/hamoller/hamoller_analysis_tools/TTrain
+    /adaqfs/home/hamoller/hamoller_analysis_tools/HelPat_t
 )
 
 link_directories(
-  /adaqfs/home/hamoller/jonesdc/macros/TTrain
-  /adaqfs/home/hamoller/jonesdc/macros/HelPat_t/build
+   /adaqfs/home/hamoller/hamoller_analysis_tools/TTrain
+   /adaqfs/home/hamoller/hamoller_analysis_tools/HelPat_t/build
 
 )
 
@@ -36,8 +36,8 @@ target_link_libraries(GoodHelicities
 target_include_directories(GoodHelicities PRIVATE
     ${ROOT_INCLUDE_DIRS}
     ${CMAKE_CURRENT_SOURCE_DIR}
-    /adaqfs/home/hamoller/jonesdc/macros/TTrain
-    /adaqfs/home/hamoller/jonesdc/macros/HelPat_t
+     /adaqfs/home/hamoller/hamoller_analysis_tools/TTrain
+     /adaqfs/home/hamoller/hamoller_analysis_tools/HelPat_t
 )
 install(TARGETS GoodHelicities DESTINATION lib)
 install(FILES GoodHelicities.h DESTINATION include)

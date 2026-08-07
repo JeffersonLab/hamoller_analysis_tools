@@ -18,26 +18,51 @@
 //This is my current main function. Right now just trying to unpack the data.//
 //Everything from here on out is my code, minus one marked case.             //
 ///////////////////////////////////////////////////////////////////////////////
-void quickRatesV2(int run, int patternType=4, int preScale=0, int histEnd=200000){
+void quickRatesV2(int run, int patternType=4, int preScale=0, double flipRate = 29.5596, double tStable = 33330.0, double tSettle = 500, int histEnd=200000){
    auto start = std::chrono::high_resolution_clock::now();
    
    const int maxChan = 46;
    const double sampleRatio = 13.0/4.0; //Fraction to multipy pedestals by. Peds are 4 sample sum, adc readout is 13 sample integral
-   const int eventWidth = 160; //Event width (and therefore bin size) in ns
+   const int eventWidth = 1000; //Event width (and therefore bin size) in ns
    const double sumTime = 4.0; //Time difference threshold for adjacent pulse combination, in ns
    const double coinTime = 6.0; //Time difference threshold for coincidence counting, in ns
-   const double coinThresh = 4000.0; //Minimum adc for coincidence counting
+   const double coinThresh = 400.0; //Minimum adc for coincidence counting (Usually 4000)
    const double singleArmThresh = 40.0; //Minimum adc for single arm counting
    
-   const double flipRate = 240.001;//29.5596; //Flip rate in Hertz
-   //const double tStable = 33330.0*0.000001; //TStable window (in s)
-   const double tSettle = 500.0*0.000001; //TSettle window (in s)
+   //const double flipRate = 240.001;//29.5596; //Flip rate in Hertz
+   tStable = tStable*0.000001; //TStable window (in s)
+   tSettle = tSettle*0.000001; //TSettle window (in s)
    const double adjFlipRate = 1/((1/flipRate)-tSettle); //Adjusted for tSettle
    
    // -----------------------------
    // TTrain lifted from Don's code
    // -----------------------------
-   const char* fnameform = "fadcV2_moller_analyzer_";
+   const char* fnamebase = "fadcV2_moller_analyzer_";
+
+   TTrain* tree = new TTrain();
+   for (int seg = 0; seg < 100; ++seg) {
+      for (int x = 0; x < 100; ++x) {
+	 TString filename(Form("%s/%s%i.%i",
+			       gSystem->Getenv("HAMOLLER_ROOTFILE_DIR"),
+			       fnamebase, run, seg));
+	 if (x > 0) filename += Form("_%i", x);
+	 filename += ".root";
+	 //std::cout << filename << std::endl;
+	 if (gSystem->AccessPathName(filename)) break;
+	 std::cout << filename << std::endl;
+
+	 tree->AddFile(filename, "T");
+      }
+   }
+
+   Long64_t nTreeEntries = tree->GetEntries();
+   std::cout << nTreeEntries << " total entries." << std::endl;
+   if (nTreeEntries == 0) {
+      std::cout << "No entries found. Exiting." << std::endl;
+      return;
+   }
+   
+   /*const char* fnameform = "fadcV2_moller_analyzer_";
    TTrain* tree = new TTrain();
    tree->SetUpTTrain(run, fnameform,0);
 
@@ -46,7 +71,7 @@ void quickRatesV2(int run, int patternType=4, int preScale=0, int histEnd=200000
    if (nTreeEntries == 0) {
       cout << "No entries found. Exiting." << endl;
       return;
-   }
+      }*/
    
    tree->SetBranchStatus("*", 0);
    
@@ -147,17 +172,19 @@ void quickRatesV2(int run, int patternType=4, int preScale=0, int histEnd=200000
    // return;
 
    int rateBinNum = 300;
-   TH1D *hlp = new TH1D("Patt_Left_Singles","Patt Left Singles",rateBinNum,pattEstRound/2,pattEstRound);
-   TH1D *hrp = new TH1D("Patt_Right_Singles","Patt Right Singles",rateBinNum,pattEstRound/2,pattEstRound);
-   TH1D *hcp = new TH1D("Patt_Coin_Counts","Patt Coin. Counts",rateBinNum,pattEstRound/2,pattEstRound);
+   TH1D *hlp = new TH1D("Patt_Left_Singles","Patt Left Singles",rateBinNum,0,pattEstRound);
+   TH1D *hrp = new TH1D("Patt_Right_Singles","Patt Right Singles",rateBinNum,0,pattEstRound);
+   TH1D *hcp = new TH1D("Patt_Coin_Counts","Patt Coin. Counts",rateBinNum,0,pattEstRound);
    double meanl=0, meanr=0, meanc=0, n=0;
    for(int nPatt = 0;nPatt<(int)vPattEnds.size();nPatt++){ //Loop over patterns
+      std::cout<<"Pattern: "<<nPatt<<std::endl;
       int pattLefts = 0;
       int pattRights = 0;
       int pattCoins = 0;
 
       for(int nEvent = vPattStarts[nPatt];nEvent<=vPattEnds[nPatt];nEvent++){ //Loop over events of a given pattern
 	 tree->GetEntry(nEvent);
+	 std::cout<<"Event: "<<nEvent<<std::endl;
 	    
 	 vector<double> vPMT03p; //Lefts
 	 vector<double> vPMT03p_t; //Left times
@@ -181,6 +208,7 @@ void quickRatesV2(int run, int patternType=4, int preScale=0, int histEnd=200000
 	    case 3:
 	       vPMT03p.push_back(adc[i]-ped[j]*sampleRatio);
 	       vPMT03p_t.push_back(adc_t[i]);
+	       std::cout<<"Pulse in Left"<<std::endl;
 	       break;
 	    case 4:
 	    case 5:
@@ -188,6 +216,7 @@ void quickRatesV2(int run, int patternType=4, int preScale=0, int histEnd=200000
 	    case 7:
 	       vPMT47p.push_back(adc[i]-ped[j]*sampleRatio);
 	       vPMT47p_t.push_back(adc_t[i]);
+	       std::cout<<"Pulse in Right"<<std::endl;    
 	       break;
 	    default:
 	       break;
@@ -195,6 +224,10 @@ void quickRatesV2(int run, int patternType=4, int preScale=0, int histEnd=200000
 	       
 	 } //End of loop over adc_chans
 
+	 std::cout<<"vPMT03p_t.size():"<<(int)vPMT03p_t.size()<<std::endl;
+	 for(int k=0;k<(int)vPMT03p_t.size();k++){ std::cout<<vPMT03p_t.at(k)<<std::flush; }
+	 std::cout<<std::endl;
+	 
 	 std::vector<uint8_t> vPMT03p_u(vPMT03p.size(),0);
 	 std::vector<uint8_t> vPMT47p_u(vPMT47p.size(),0);
 	 int nSummedL = 0, nSummedR = 0;
@@ -228,6 +261,8 @@ void quickRatesV2(int run, int patternType=4, int preScale=0, int histEnd=200000
 	    prevEventTimeLeft=eventTimeLeft;
 	 }
 	 pattLefts = pattLefts + (int)vPMT03ps_t.size();
+	 std::cout<<"vPMT03ps_t.size():"<<(int)vPMT03ps_t.size()<<std::endl;
+
 
 	 //Right pulses
 	 for(int k=0;k<(int)vPMT47p_t.size();k++){ //k is pulse index
@@ -259,7 +294,7 @@ void quickRatesV2(int run, int patternType=4, int preScale=0, int histEnd=200000
 	    prevEventTimeRight=eventTimeRight;
 	 }
 	 pattRights = pattRights + (int)vPMT47ps_t.size();
-	 if(nSummedL != nSummedR)cout<<"Different at event "<<nEvent<<endl;
+	 //if(nSummedL != nSummedR)cout<<"Different at event "<<nEvent<<endl;
 	 //Coincidence counting
 	 std::vector<uint8_t> vPMT03ps_u(vPMT03ps.size(),0);
 	 std::vector<uint8_t> vPMT47ps_u(vPMT47ps.size(),0);
@@ -455,7 +490,7 @@ void quickRatesV2(int run, int patternType=4, int preScale=0, int histEnd=200000
    auto end = std::chrono::high_resolution_clock::now();
    auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end-start);
    std::cout<<"Time: "<<duration.count()<<" milliseconds"<<endl;
-   int nb = hcevtt->FindFirstBinAbove(hcevtt->GetEntries()/3.);
+   /*int nb = hcevtt->FindFirstBinAbove(hcevtt->GetEntries()/3.);
    int nmissing=0;
    for(int i=nb+5;i<hcevtt->GetNbinsX();i++){
       int num = (int)(double(i-nb)/(double)nb + 0.4);
@@ -467,5 +502,5 @@ void quickRatesV2(int run, int patternType=4, int preScale=0, int histEnd=200000
    double cor = 1+ nmissing/(double)hcevtt->GetEntries();
    printf("Left  rate from hist mean: %0.2f Hz\n",meanl*flipRate/(double)patternType*cor);
    printf("Right  rate from hist mean: %0.2f Hz \n",meanr*flipRate/(double)patternType*cor);
-   printf("Coin  rate from hist mean: %0.2f Hz\n",meanc*flipRate/(double)patternType*cor);
+   printf("Coin  rate from hist mean: %0.2f Hz\n",meanc*flipRate/(double)patternType*cor);*/
 }
