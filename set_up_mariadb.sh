@@ -1,4 +1,11 @@
 #!/usr/bin/env bash
+######################################################
+## Author: Donald Jones Aug. 2026                   ##
+## Property of Jefferson Lab                        ##
+##                                                  ##
+## This is the original script for setting up the   ##
+## MariaDB SQL databases for the new FADC-based DAQ.##
+######################################################
 
 # Exit immediately if a command exits with a non-zero status
 set -eo pipefail
