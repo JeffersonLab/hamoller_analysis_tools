@@ -332,7 +332,7 @@ CREATE TABLE IF NOT EXISTS Analysis (
     asym_q    		FLOAT DEFAULT NULL COMMENT 'Charge asymmetry',
     asym_q_err 		FLOAT DEFAULT NULL COMMENT 'Error on charge asymmetry',
     qpedused 		FLOAT DEFAULT NULL COMMENT 'BCM pedestal value used in analysis',
-    qpedcalc 		FLOAT(7,6) DEFAULT NULL COMMENT 'Calculated BCM pedestal value',
+    qpedcalc 		FLOAT DEFAULT NULL COMMENT 'Calculated BCM pedestal value',
 
     last_updated 	TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP 
         		COMMENT 'Timestamp of last record update',
