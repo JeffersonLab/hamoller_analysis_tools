@@ -224,7 +224,7 @@ CREATE TABLE IF NOT EXISTS EPICS_data (
     epics_las_pow_halla      FLOAT(10,5) DEFAULT NULL COMMENT 'Laser power Hall A [PV: IGL1I00AI3]',
     epics_las_pow_hallb      FLOAT(10,5) DEFAULT NULL COMMENT 'Laser power Hall B [PV: IGL1I00AI4]',
     epics_las_pow_hallc      FLOAT(10,5) DEFAULT NULL COMMENT 'Laser power Hall C [PV: IGL1I00AI5]',
-    epics_las_pow_halld      FLOAT(10,5) DEFAULT NULL COMMENT 'Laser power Hall D [PV: IGL1I00AI56',
+    epics_las_pow_halld      FLOAT(10,5) DEFAULT NULL COMMENT 'Laser power Hall D [PV: IGL1I00AI6]',
     epics_las_attn_halla     FLOAT(10,5) DEFAULT NULL COMMENT 'Laser attenuation Hall A [PV: psub_aa_pos]',
     epics_las_attn_hallb     FLOAT(10,5) DEFAULT NULL COMMENT 'Laser attenuation Hall B [PV: psub_ab_pos]',
     epics_las_attn_hallc     FLOAT(10,5) DEFAULT NULL COMMENT 'Laser attenuation Hall C [PV: psub_ac_pos]',
