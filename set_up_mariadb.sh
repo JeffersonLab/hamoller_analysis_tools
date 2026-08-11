@@ -79,7 +79,7 @@ CREATE TABLE IF NOT EXISTS DAQ_config (
 
     -- Channel Masks & Operating Modes
     FADC_ADC_MASK      	  VARCHAR(255) DEFAULT NULL COMMENT 'ADC channel enable mask',
-    FADC_TRG_MASK 	  VARCHAR(255) DEFAULT NULL COMMENT 'Trigger channel enable mask',
+    FADC_TRG_MASK 	      VARCHAR(255) DEFAULT NULL COMMENT 'Trigger channel enable mask',
     FADC_TET_IGNORE_MASK  VARCHAR(255) DEFAULT NULL COMMENT 'Force readout of channel mask (i.e. ignore threshold for readout)',
     FADC_ALLCH_MODE 	  VARCHAR(255) DEFAULT NULL COMMENT 'Set the FADC mode for each channel',
 
@@ -90,22 +90,22 @@ CREATE TABLE IF NOT EXISTS DAQ_config (
     FADC_NSA 		  SMALLINT UNSIGNED DEFAULT NULL COMMENT 'Time (units: ns) after threshold crossing to include in integral',
 
     -- Peak Processing & Pedestal Limits
-    FADC_NPEAK 	       	  SMALLINT UNSIGNED DEFAULT NULL COMMENT 'Number of Pulses allowed for each window',
+    FADC_NPEAK 	      SMALLINT UNSIGNED DEFAULT NULL COMMENT 'Number of Pulses allowed for each window',
     FADC_NPED 		  SMALLINT UNSIGNED DEFAULT NULL COMMENT 'Number of samples included in the pedestal sum',
     FADC_MAXPED 	  SMALLINT UNSIGNED DEFAULT NULL COMMENT 'Maximum value of sample to be included in pedestal sum (0--1023)',
     FADC_NSAT 		  SMALLINT UNSIGNED DEFAULT NULL COMMENT 'Number of consecutive samples over threshold for valid pulse (1--4)',
     FADC_TET 		  SMALLINT UNSIGNED DEFAULT NULL COMMENT 'Fadc channel hit threshold (adc channel). May be overridden by individual channel TETs',
 
     -- DAC, Gain & Accumulator Configuration
-    FADC_DAC				SMALLINT UNSIGNED DEFAULT NULL COMMENT 'Board DAC, one and the same for all 16 channels (DAC/mV)',
-    FADC_GAIN 		  		FLOAT(10,5) DEFAULT NULL COMMENT 'Board Gains, same for all channels (MeV/channel)',
+    FADC_DAC				            SMALLINT UNSIGNED DEFAULT NULL COMMENT 'Board DAC, one and the same for all 16 channels (DAC/mV)',
+    FADC_GAIN 		  		            FLOAT(10,5) DEFAULT NULL COMMENT 'Board Gains, same for all channels (MeV/channel)',
     FADC_ACCUMULATOR_SCALER_MODE_MASK 	VARCHAR(255) DEFAULT NULL COMMENT 'Accumulator scaler mode: 0=Default, TET based pulse integration, 1=Sum all samples',
 
     -- Møller Discriminator & Trigger Logic Settings
     FADC_MOLLER 	      VARCHAR(255) DEFAULT NULL COMMENT 'L_OFFSET, R_OFFSET, L_SUM_THR, R_SUM_THR, DISC_WIDTH, DISC_MODE parameters',
     FADC_L_OFFSET 	      FLOAT(10,5) COMMENT 'ADC amplitude subtracted from the sum of the 4 left channels i.e. the sum pedestal',
     FADC_R_OFFSET 	      FLOAT(10,5) COMMENT 'ADC amplitude subtracted from the sum of the 4 right channels i.e. the sum pedestal',
-    FADC_DISC_WIDTH 	      FLOAT(10,5) COMMENT 'Coincidence with in 4ns units (the left/right sum discriminator width)',
+    FADC_DISC_WIDTH 	  FLOAT(10,5) COMMENT 'Coincidence with in 4ns units (the left/right sum discriminator width)',
     FADC_DISC_MODE 	      TINYINT(1) COMMENT 'When 0 the left/right sum discriminators are operating in non-updating mode',
     FADC_L_SUM_THR 	      FLOAT(10,5) COMMENT 'Threshold which the left sum must pass',
     FADC_R_SUM_THR 	      FLOAT(10,5) COMMENT 'Threshold which the right sum must pass',
@@ -286,7 +286,7 @@ CREATE TABLE IF NOT EXISTS EPICS_data (
     epics_det_hv_ch6         FLOAT(10,5) DEFAULT NULL COMMENT 'HA Moller HV Readback Ch 6 (V) [PV: IHVHAPOL:03:005:VMon]',
     epics_det_hv_ch7         FLOAT(10,5) DEFAULT NULL COMMENT 'HA Moller HV Readback Ch 7 (V) [PV: IHVHAPOL:03:006:VMon]',
     epics_det_hv_ch8         FLOAT(10,5) DEFAULT NULL COMMENT 'HA Moller HV Readback Ch 8 (V) [PV: IHVHAPOL:03:007:VMon]',
-    last_updated 	     TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'Timestamp of last record update',
+    last_updated 	         TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'Timestamp of last record update',
 
     CONSTRAINT fk_epics_run FOREIGN KEY (run_number) 
         REFERENCES Run_info(run_number)
@@ -308,30 +308,30 @@ CREATE TABLE IF NOT EXISTS Analysis (
     counts_to_Hz     FLOAT DEFAULT NULL COMMENT 'Multiplicative factor to get from counts per window to rate. Should be 1/T_settle.',	     
 
     -- Diagnostics & Timing
-    bcm			INT DEFAULT NULL COMMENT 'Beam current monitor scaler counts',
+    bcm			        INT DEFAULT NULL COMMENT 'Beam current monitor scaler counts',
     clock100kHz      	INT  DEFAULT NULL COMMENT '100kHz Clock scaler ticks',
     clock20MHz       	INT  DEFAULT NULL COMMENT '20MHz Clock scaler ticks',
-    deadtime_tau_1 	DOUBLE COMMENT 'Dead time constant (s) for coinc-coinc pile up',
-    deadtime_tau_2 	DOUBLE COMMENT 'Dead time constant (s) for single-coinc pile up',
-    accid_tau 	   	DOUBLE COMMENT 'Accidental window width (s)',	       
+    deadtime_tau_1 	    DOUBLE COMMENT 'Dead time constant (s) for coinc-coinc pile up',
+    deadtime_tau_2 	    DOUBLE COMMENT 'Dead time constant (s) for single-coinc pile up',
+    accid_tau 	   	    DOUBLE COMMENT 'Accidental window width (s)',	       
 
 
     -- Asymmetries & Polarization Parameters
     asym_mol 	     	FLOAT DEFAULT NULL COMMENT 'Measured raw asymmetry',
     asym_mol_err     	FLOAT DEFAULT NULL COMMENT 'Statistical error on raw asymmetry',
-    Azz 		FLOAT(10,8) DEFAULT NULL COMMENT 'Analyzing power Azz',
+    Azz 		        FLOAT(10,8) DEFAULT NULL COMMENT 'Analyzing power Azz',
     poltarg 	     	FLOAT(10,8) DEFAULT NULL COMMENT 'Target polarization',
     pol_beam 	     	FLOAT DEFAULT NULL COMMENT 'Extracted beam polarization',
     pol_beam_err     	FLOAT DEFAULT NULL COMMENT 'Error on beam polarization',
 
     -- Charge Asymmetry & Pedestals
-    asym_q    		FLOAT DEFAULT NULL COMMENT 'Charge asymmetry',
-    asym_q_err 		FLOAT DEFAULT NULL COMMENT 'Error on charge asymmetry',
-    qpedused 		FLOAT DEFAULT NULL COMMENT 'BCM pedestal value used in analysis',
-    qpedcalc 		FLOAT DEFAULT NULL COMMENT 'Calculated BCM pedestal value',
+    asym_q    		    FLOAT DEFAULT NULL COMMENT 'Charge asymmetry',
+    asym_q_err 		    FLOAT DEFAULT NULL COMMENT 'Error on charge asymmetry',
+    qpedused 		    FLOAT DEFAULT NULL COMMENT 'BCM pedestal value used in analysis',
+    qpedcalc 		    FLOAT DEFAULT NULL COMMENT 'Calculated BCM pedestal value',
 
-    last_updated 	TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP 
-        		COMMENT 'Timestamp of last record update',
+    last_updated 	    TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP 
+        		            COMMENT 'Timestamp of last record update',
     
     CONSTRAINT fk_analysis_run FOREIGN KEY (run_number) 
         REFERENCES Run_info(run_number)
