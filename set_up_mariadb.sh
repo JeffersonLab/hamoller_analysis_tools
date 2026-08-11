@@ -29,34 +29,35 @@ CREATE TABLE IF NOT EXISTS Run_info (
     run_number 	    	   INT UNSIGNED PRIMARY KEY,
     run_group 	    	   INT UNSIGNED,
     run_experiment  	   VARCHAR(255) COMMENT 'Name of experiment',
-    run_start 		   VARCHAR(50) COMMENT 'Start of run time stamp', -- Fits Linux 'date' default string (e.g., "Fri Jul 31 16:54:21 EDT 2026")
-    run_end 		   VARCHAR(50)COMMENT 'End of run time stamp',
+    run_start 		       VARCHAR(50) COMMENT 'Start of run time stamp', -- Fits Linux 'date' default string (e.g., "Fri Jul 31 16:54:21 EDT 2026")
+    run_end 		       VARCHAR(50)COMMENT 'End of run time stamp',
+    run_length             INT UNSIGNED NULL COMMENT 'Run length in seconds',
     measurement_type 	   ENUM(
-        		   'Rate scan',
-        		   'Polarization',
-        		   'Systematic study',
-        		   'Bleedthrough',
-        		   'Gain matching',
-        		   'Threshold check',
-        		   'Other') NOT NULL DEFAULT 'Other',
-    run_quality		   ENUM(
-    			   'Good', 
-    			   'Bad', 
-    			   'Suspect',
-    			   'Undetermined') NOT NULL DEFAULT 'Undetermined',
-    beam_sigma_x 	   FLOAT(10,5) COMMENT '1 sigma x-width (mm) of beam from harp scan',
-    beam_sigma_y 	   FLOAT(10,5) COMMENT '1 sigma y-width (mm) of beam from harp scan',
+        		               'Rate scan',
+        		               'Polarization',
+        		               'Systematic study',
+        		               'Bleedthrough',
+        		               'Gain matching',
+        		               'Threshold check',
+        		               'Other') NOT NULL DEFAULT 'Other',
+    run_quality		       ENUM(
+    			               'Good', 
+    			               'Bad', 
+    			               'Suspect',
+    			               'Undetermined') NOT NULL DEFAULT 'Undetermined',
+    beam_sigma_x 	       FLOAT(10,5) COMMENT '1 sigma x-width (mm) of beam from harp scan',
+    beam_sigma_y 	       FLOAT(10,5) COMMENT '1 sigma y-width (mm) of beam from harp scan',
     requested_current 	   FLOAT(10,5) COMMENT 'Requested beam current in microamperes',
-    target_pol 		   FLOAT(10,8) COMMENT 'Calculated target polarization',
+    target_pol 		       FLOAT(10,8) COMMENT 'Calculated target polarization',
     target_foil_avgT 	   FLOAT(10,5) COMMENT 'Foil temperature in Kelvin weighted by beam intensity',
-    hallA_ambientT 	   FLOAT(10,5) COMMENT 'Hall A ambient temperature in Kelvin',
-    run_qped 		   SMALLINT COMMENT 'Charge pedestal in counts',
+    hallA_ambientT 	       FLOAT(10,5) COMMENT 'Hall A ambient temperature in Kelvin',
+    run_qped 		       SMALLINT COMMENT 'Charge pedestal in counts',
     run_deadtime_tau_1 	   DOUBLE COMMENT 'Dead time constant (ns) for coinc-coinc pile up',
     run_deadtime_tau_2 	   DOUBLE COMMENT 'Dead time constant (ns) for single-coinc pile up',
-    run_accid_tau 	   DOUBLE COMMENT 'Accidental window width (ns)',	       
-    comment 		   TEXT,
-    last_updated 	   TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP 
-        		   COMMENT 'Timestamp of last record update'
+    run_accid_tau 	       DOUBLE COMMENT 'Accidental window width (ns)',	       
+    comment 		       TEXT,
+    last_updated 	       TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP 
+        		               COMMENT 'Timestamp of last record update'
 ) ENGINE=InnoDB;
 
 -- 2. DAQ_config Table
@@ -161,13 +162,8 @@ CREATE TABLE IF NOT EXISTS DAQ_config (
 
 -- 3. EPICS_data Table
 CREATE TABLE IF NOT EXISTS EPICS_data (
-    -- Primary Run Identifiers
     run_number               INT UNSIGNED PRIMARY KEY,
-    epics_run_type           VARCHAR(255) DEFAULT NULL COMMENT 'Run type',
-    epics_run_start          DATETIME DEFAULT NULL COMMENT 'Run start timestamp',
-    epics_run_end            DATETIME DEFAULT NULL COMMENT 'Run end timestamp',
-    epics_run_length         INT UNSIGNED NULL COMMENT 'Run length in seconds',
-
+    
     -- Accelerator & Beam Energy
     epics_E_beam             FLOAT(10,5) DEFAULT NULL COMMENT 'Beam energy, MeV Hall A [PV: HALLA:p]',
     epics_E_inj              FLOAT(10,5) DEFAULT NULL COMMENT 'Injector energy, MeV [PV: MMSINJEGAIN]',
