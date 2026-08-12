@@ -50,11 +50,6 @@ CREATE TABLE IF NOT EXISTS Run_info (
     requested_current 	   FLOAT(10,5) COMMENT 'Requested beam current in microamperes',
     target_pol 		       FLOAT(10,8) COMMENT 'Calculated target polarization',
     target_foil_avgT 	   FLOAT(10,5) COMMENT 'Foil temperature in Kelvin weighted by beam intensity',
-    hallA_ambientT 	       FLOAT(10,5) COMMENT 'Hall A ambient temperature in Kelvin',
-    run_qped 		       SMALLINT COMMENT 'Charge pedestal in counts',
-    run_deadtime_tau_1 	   DOUBLE COMMENT 'Dead time constant (ns) for coinc-coinc pile up',
-    run_deadtime_tau_2 	   DOUBLE COMMENT 'Dead time constant (ns) for single-coinc pile up',
-    run_accid_tau 	       DOUBLE COMMENT 'Accidental window width (ns)',	       
     comment 		       TEXT,
     last_updated 	       TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP 
         		               COMMENT 'Timestamp of last record update'
