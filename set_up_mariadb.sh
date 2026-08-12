@@ -32,6 +32,13 @@ CREATE TABLE IF NOT EXISTS Run_info (
     run_start 		       VARCHAR(50) COMMENT 'Start of run time stamp', -- Fits Linux 'date' default string (e.g., "Fri Jul 31 16:54:21 EDT 2026")
     run_end 		       VARCHAR(50)COMMENT 'End of run time stamp',
     run_length             INT UNSIGNED NULL COMMENT 'Run length in seconds',
+     -- Trigger Prescales
+    prescale1 INT COMMENT 'Trigger 1 MPS prescale: -1 distabled, 0 no prescale, 1 keep every other event, 2 keep every 3rd event',
+    prescale2 INT COMMENT 'Trigger 2 prescale: -1 distabled, 0 no prescale, 1 keep every other event, 2 keep every 3rd event',
+    prescale3 INT COMMENT 'Trigger 3 Leftsum prescale: -1 distabled, 0 no prescale, 1 keep every other event, 2 keep every 3rd event',
+    prescale4 INT COMMENT 'Trigger 4 Rightsum prescale: -1 distabled, 0 no prescale, 1 keep every other event, 2 keep every 3rd event',
+    prescale5 INT COMMENT 'Trigger 5 prescale: -1 distabled, 0 no prescale, 1 keep every other event, 2 keep every 3rd event',
+    prescale6 INT COMMENT 'Trigger 6 Coinc prescale: -1 distabled, 0 no prescale, 1 keep every other event, 2 keep every 3rd event',
     measurement_type 	   ENUM(
         		               'Rate scan',
         		               'Polarization',
@@ -59,14 +66,6 @@ CREATE TABLE IF NOT EXISTS Run_info (
 CREATE TABLE IF NOT EXISTS DAQ_config (
     run_number INT UNSIGNED PRIMARY KEY,
     
-    -- Trigger Prescales
-    prescale0 INT,
-    prescale1 INT,
-    prescale2 INT,
-    prescale3 INT,
-    prescale4 INT,
-    prescale5 INT,
-    prescale6 INT,
     
 -- Crate & Slot Identification
     FADC_CRATE		  VARCHAR(255) DEFAULT NULL COMMENT 'Crate identifier or hostname (e.g., all, hapolmollervme.jlab.org)',
