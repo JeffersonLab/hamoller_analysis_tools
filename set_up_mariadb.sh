@@ -32,14 +32,7 @@ CREATE TABLE IF NOT EXISTS Run_info (
     run_start 		       VARCHAR(50) COMMENT 'Start of run time stamp', -- Fits Linux 'date' default string (e.g., "Fri Jul 31 16:54:21 EDT 2026")
     run_end 		       VARCHAR(50)COMMENT 'End of run time stamp',
     run_length             INT UNSIGNED NULL COMMENT 'Run length in seconds',
-     -- Trigger Prescales
-    prescale1 INT COMMENT 'Trigger 1 MPS prescale: -1 distabled, 0 no prescale, 1 keep every other event, 2 keep every 3rd event',
-    prescale2 INT COMMENT 'Trigger 2 prescale: -1 distabled, 0 no prescale, 1 keep every other event, 2 keep every 3rd event',
-    prescale3 INT COMMENT 'Trigger 3 Leftsum prescale: -1 distabled, 0 no prescale, 1 keep every other event, 2 keep every 3rd event',
-    prescale4 INT COMMENT 'Trigger 4 Rightsum prescale: -1 distabled, 0 no prescale, 1 keep every other event, 2 keep every 3rd event',
-    prescale5 INT COMMENT 'Trigger 5 prescale: -1 distabled, 0 no prescale, 1 keep every other event, 2 keep every 3rd event',
-    prescale6 INT COMMENT 'Trigger 6 Coinc prescale: -1 distabled, 0 no prescale, 1 keep every other event, 2 keep every 3rd event',
-    measurement_type 	   ENUM(
+    run_measurement_type   ENUM(
         		               'Rate scan',
         		               'Polarization',
         		               'Systematic study',
@@ -52,11 +45,22 @@ CREATE TABLE IF NOT EXISTS Run_info (
     			               'Bad', 
     			               'Suspect',
     			               'Undetermined') NOT NULL DEFAULT 'Undetermined',
+  
+     -- Trigger Prescales
+    prescale1 INT COMMENT 'Trigger 1 MPS prescale: -1 distabled, 0 no prescale, 1 keep every other event, 2 keep every 3rd event',
+    prescale2 INT COMMENT 'Trigger 2 prescale: -1 distabled, 0 no prescale, 1 keep every other event, 2 keep every 3rd event',
+    prescale3 INT COMMENT 'Trigger 3 Leftsum prescale: -1 distabled, 0 no prescale, 1 keep every other event, 2 keep every 3rd event',
+    prescale4 INT COMMENT 'Trigger 4 Rightsum prescale: -1 distabled, 0 no prescale, 1 keep every other event, 2 keep every 3rd event',
+    prescale5 INT COMMENT 'Trigger 5 prescale: -1 distabled, 0 no prescale, 1 keep every other event, 2 keep every 3rd event',
+    prescale6 INT COMMENT 'Trigger 6 Coinc prescale: -1 distabled, 0 no prescale, 1 keep every other event, 2 keep every 3rd event',
+
+    -- Beam and Target 
     beam_sigma_x 	       FLOAT(10,5) COMMENT '1 sigma x-width (mm) of beam from harp scan',
     beam_sigma_y 	       FLOAT(10,5) COMMENT '1 sigma y-width (mm) of beam from harp scan',
     requested_current 	   FLOAT(10,5) COMMENT 'Requested beam current in microamperes',
     target_pol 		       FLOAT(10,8) COMMENT 'Calculated target polarization',
     target_foil_avgT 	   FLOAT(10,5) COMMENT 'Foil temperature in Kelvin weighted by beam intensity',
+    
     comment 		       TEXT,
     last_updated 	       TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP 
         		               COMMENT 'Timestamp of last record update'
