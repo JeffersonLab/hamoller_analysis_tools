@@ -195,7 +195,7 @@ CREATE TABLE IF NOT EXISTS EPICS_data (
     epics_mcz1h0v_cur        FLOAT(10,5) DEFAULT NULL COMMENT 'MCZ1H0V vertical corrector [PV: MBD1H04VM]',
 
     -- Target System
-    epics_target             INT(11) DEFAULT NULL COMMENT 'Target selection ID / state',
+    epics_tgt_foil           INT(11) DEFAULT NULL COMMENT 'Target selection ID / state',
     epics_tgt_angle          FLOAT(10,5) DEFAULT NULL COMMENT 'Target Rotary Position(V) [PV: HAHFMROTENC]',
     epics_tgt_rot_neglimit   TINYINT(1) DEFAULT NULL COMMENT 'Rotary Negative Limit Switch [PV: HAHFMROTSM.LLS]',
     epics_tgt_rot_poslimit   TINYINT(1) DEFAULT NULL COMMENT 'Rotary Positive Limit Switch [PV: HAHFMROTSM.HLS]',
@@ -206,6 +206,11 @@ CREATE TABLE IF NOT EXISTS EPICS_data (
     epics_tgt_lin_llmit      TINYINT(1) DEFAULT NULL COMMENT 'Linear Retracted Limit Switch [PV: HAHFMLINSM.LLS]',
     epics_tgt_lin_athome     TINYINT(1) DEFAULT NULL COMMENT 'Linear Home switch [PV: HAHFMLINSM.ATHM]',
     epics_tgt_lin_pos_mm     FLOAT(10,5) DEFAULT NULL COMMENT 'Linear Position in mm [PV: HAHFMLINSM.RBV]',
+    epics_tgt_ladder_temp1   FLOAT(10,5) DEFAULT NULL COMMENT 'Hall A Moller target ladder temperature (degC) near foil 1 [PV: hamolpol_tgt_ladder_temp1]',
+    epics_tgt_ladder_temp2   FLOAT(10,5) DEFAULT NULL COMMENT 'Hall A Moller target ladder temperature (degC) near foil 2 [PV: hamolpol_tgt_ladder_temp2]',
+    epics_tgt_ladder_temp3   FLOAT(10,5) DEFAULT NULL COMMENT 'Hall A Moller target ladder temperature (degC) near foil 3 [PV: hamolpol_tgt_ladder_temp3]',
+    epics_tgt_motion_temp    FLOAT(10,5) DEFAULT NULL COMMENT 'Hall A Moller temperature (degC) on linear motion housing [PV: hamolpol_tgt_lifter_temp]',
+    epics_tgt_flange_temp    FLOAT(10,5) DEFAULT NULL COMMENT 'Hall A Moller top target magnet flange temperature (degC) [PV: hamolpol_tgt_top_flange_temp]',
 
     -- Injector Laser & Slits
     epics_las_mode_halla     VARCHAR(255) DEFAULT NULL COMMENT 'Laser mode Hall A [PV: IGL1I00HALLAMODE]',
