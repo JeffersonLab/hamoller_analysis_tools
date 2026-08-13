@@ -51,6 +51,7 @@ INSERT INTO run_quality_lookup (code, display_label) VALUES
     ('SUSPECT',      'Suspect'),
     ('JUNK',         'Junk'),
     ('UNDETERMINED', 'Undetermined');
+
 -- 1. Run_info Table
 CREATE TABLE IF NOT EXISTS Run_info (
     run_number 	    	   INT UNSIGNED PRIMARY KEY,
@@ -59,9 +60,10 @@ CREATE TABLE IF NOT EXISTS Run_info (
     run_start 		       VARCHAR(50) COMMENT 'Start of run time stamp', -- Fits Linux 'date' default string (e.g., "Fri Jul 31 16:54:21 EDT 2026")
     run_end 		       VARCHAR(50)COMMENT 'End of run time stamp',
     run_length             INT UNSIGNED NULL COMMENT 'Run length in seconds',
+ 
     -- Lookup fields with fixed options
-    run_type VARCHAR(32) NOT NULL DEFAULT 'OTHER',
-    run_quality VARCHAR(32) NOT NULL DEFAULT 'UNDETERMINED',
+    run_type     VARCHAR(32) NOT NULL DEFAULT 'OTHER',
+    run_quality  VARCHAR(32) NOT NULL DEFAULT 'UNDETERMINED',
 
     -- Foreign Key constraints to enforce valid values
     CONSTRAINT fk_run_info_type 
