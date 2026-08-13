@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+    #!/usr/bin/env bash
 #######################################################
 ## Author: Donald Jones Aug. 2026 (Gemini 3.6 Flash) ##
 ## Property of Jefferson Lab                         ##
@@ -23,7 +23,34 @@ set -u
 # --- SQL Script Definition ---
 SQL_SCRIPT=$(cat <<'EOF'
 USE hamoller_db;
+-- Lookup table for Run Types
+CREATE TABLE run_type_lookup (
+    code VARCHAR(32) PRIMARY KEY,
+    display_label VARCHAR(64) NOT NULL
+);
 
+INSERT INTO run_type_lookup (code, display_label) VALUES
+    ('RATE_SCAN',       'Rate scan'),
+    ('POLARIZATION',    'Polarization'),
+    ('SYSTEMATIC_STUDY','Systematic study'),
+    ('BLEEDTHROUGH',     'Bleedthrough'),
+    ('GAIN_MATCHING',   'Gain matching'),
+    ('THRESHOLD_CHECK', 'Threshold check'),
+    ('TEST',            'Test'),
+    ('OTHER',           'Other');
+
+-- Lookup table for Run Quality
+CREATE TABLE run_quality_lookup (
+    code VARCHAR(32) PRIMARY KEY,
+    display_label VARCHAR(64) NOT NULL
+);
+
+INSERT INTO run_quality_lookup (code, display_label) VALUES
+    ('GOOD',         'Good'),
+    ('BAD',          'Bad'),
+    ('SUSPECT',      'Suspect'),
+    ('JUNK',         'Junk'),
+    ('UNDETERMINED', 'Undetermined');
 -- 1. Run_info Table
 CREATE TABLE IF NOT EXISTS Run_info (
     run_number 	    	   INT UNSIGNED PRIMARY KEY,
@@ -32,20 +59,23 @@ CREATE TABLE IF NOT EXISTS Run_info (
     run_start 		       VARCHAR(50) COMMENT 'Start of run time stamp', -- Fits Linux 'date' default string (e.g., "Fri Jul 31 16:54:21 EDT 2026")
     run_end 		       VARCHAR(50)COMMENT 'End of run time stamp',
     run_length             INT UNSIGNED NULL COMMENT 'Run length in seconds',
-    run_type               ENUM(
-        		               'Rate scan',
-        		               'Polarization',
-        		               'Systematic study',
-        		               'Bleedthrough',
-        		               'Gain matching',
-        		               'Threshold check',
-        		               'Other') NOT NULL DEFAULT 'Other',
-    run_quality		       ENUM(
-    			               'Good', 
-    			               'Bad', 
-    			               'Suspect',
-    			               'Undetermined') NOT NULL DEFAULT 'Undetermined',
-  
+    -- Lookup fields with fixed options
+    run_type VARCHAR(32) NOT NULL DEFAULT 'OTHER',
+    run_quality VARCHAR(32) NOT NULL DEFAULT 'UNDETERMINED',
+
+    -- Foreign Key constraints to enforce valid values
+    CONSTRAINT fk_run_info_type 
+        FOREIGN KEY (run_type) 
+        REFERENCES run_type_lookup(code)
+        ON UPDATE CASCADE 
+        ON DELETE RESTRICT,
+
+    CONSTRAINT fk_run_info_quality 
+        FOREIGN KEY (run_quality) 
+        REFERENCES run_quality_lookup(code)
+        ON UPDATE CASCADE 
+        ON DELETE RESTRICT,
+        
      -- Trigger Prescales
     trig_ps1 INT COMMENT 'Trigger 1 MPS prescale: -1 distabled, 0 no prescale, 1 keep every other event, 2 keep every 3rd event',
     trig_ps2 INT COMMENT 'Trigger 2 prescale: -1 distabled, 0 no prescale, 1 keep every other event, 2 keep every 3rd event',
@@ -71,85 +101,85 @@ CREATE TABLE IF NOT EXISTS DAQ_config (
     run_number INT UNSIGNED PRIMARY KEY,
     
     
--- Crate & Slot Identification
-    FADC_CRATE		  VARCHAR(255) DEFAULT NULL COMMENT 'Crate identifier or hostname (e.g., all, hapolmollervme.jlab.org)',
-    FADC_SLOT 		  VARCHAR(255) DEFAULT NULL COMMENT 'Slot selection (e.g., all, 3)',
+    -- Crate & Slot Identification 
+    fadc_crate    VARCHAR(255) DEFAULT NULL COMMENT 'Crate identifier or hostname (e.g., all, hapolmollervme.jlab.org)', 
+    fadc_slot     VARCHAR(255) DEFAULT NULL COMMENT 'Slot selection (e.g., all, 3)', 
 
-    -- Channel Masks & Operating Modes
-    FADC_ADC_MASK      	  VARCHAR(255) DEFAULT NULL COMMENT 'ADC channel enable mask',
-    FADC_TRG_MASK 	      VARCHAR(255) DEFAULT NULL COMMENT 'Trigger channel enable mask',
-    FADC_TET_IGNORE_MASK  VARCHAR(255) DEFAULT NULL COMMENT 'Force readout of channel mask (i.e. ignore threshold for readout)',
-    FADC_ALLCH_MODE 	  VARCHAR(255) DEFAULT NULL COMMENT 'Set the FADC mode for each channel',
+    -- Channel Masks & Operating Modes 
+    fadc_adc_mask        VARCHAR(255) DEFAULT NULL COMMENT 'ADC channel enable mask', 
+    fadc_trg_mask        VARCHAR(255) DEFAULT NULL COMMENT 'Trigger channel enable mask', 
+    fadc_tet_ignore_mask VARCHAR(255) DEFAULT NULL COMMENT 'Force readout of channel mask (i.e. ignore threshold for readout)', 
+    fadc_allch_mode      VARCHAR(255) DEFAULT NULL COMMENT 'Set the FADC mode for each channel', 
 
-    -- Windowing & Timing Definitions
-    FADC_W_OFFSET	  SMALLINT UNSIGNED DEFAULT NULL COMMENT 'Number of ns back from trigger point',
-    FADC_W_WIDTH 	  SMALLINT UNSIGNED DEFAULT NULL COMMENT 'Number of ns to include in trigger window',
-    FADC_NSB 		  SMALLINT UNSIGNED DEFAULT NULL COMMENT 'Time (units: ns) before threshold crossing to include in integral',
-    FADC_NSA 		  SMALLINT UNSIGNED DEFAULT NULL COMMENT 'Time (units: ns) after threshold crossing to include in integral',
+    -- Windowing & Timing Definitions 
+    fadc_w_offset  SMALLINT UNSIGNED DEFAULT NULL COMMENT 'Number of ns back from trigger point', 
+    fadc_w_width   SMALLINT UNSIGNED DEFAULT NULL COMMENT 'Number of ns to include in trigger window', 
+    fadc_nsb       SMALLINT UNSIGNED DEFAULT NULL COMMENT 'Time (units: ns) before threshold crossing to include in integral', 
+    fadc_nsa       SMALLINT UNSIGNED DEFAULT NULL COMMENT 'Time (units: ns) after threshold crossing to include in integral', 
 
-    -- Peak Processing & Pedestal Limits
-    FADC_NPEAK 	      SMALLINT UNSIGNED DEFAULT NULL COMMENT 'Number of Pulses allowed for each window',
-    FADC_NPED 		  SMALLINT UNSIGNED DEFAULT NULL COMMENT 'Number of samples included in the pedestal sum',
-    FADC_MAXPED 	  SMALLINT UNSIGNED DEFAULT NULL COMMENT 'Maximum value of sample to be included in pedestal sum (0--1023)',
-    FADC_NSAT 		  SMALLINT UNSIGNED DEFAULT NULL COMMENT 'Number of consecutive samples over threshold for valid pulse (1--4)',
-    FADC_TET 		  SMALLINT UNSIGNED DEFAULT NULL COMMENT 'Fadc channel hit threshold (adc channel). May be overridden by individual channel TETs',
+    -- Peak Processing & Pedestal Limits 
+    fadc_npeak   SMALLINT UNSIGNED DEFAULT NULL COMMENT 'Number of Pulses allowed for each window', 
+    fadc_nped    SMALLINT UNSIGNED DEFAULT NULL COMMENT 'Number of samples included in the pedestal sum', 
+    fadc_maxped  SMALLINT UNSIGNED DEFAULT NULL COMMENT 'Maximum value of sample to be included in pedestal sum (0--1023)', 
+    fadc_nsat    SMALLINT UNSIGNED DEFAULT NULL COMMENT 'Number of consecutive samples over threshold for valid pulse (1--4)', 
+    fadc_tet     SMALLINT UNSIGNED DEFAULT NULL COMMENT 'Fadc channel hit threshold (adc channel). May be overridden by individual channel TETs', 
 
-    -- DAC, Gain & Accumulator Configuration
-    FADC_DAC				            SMALLINT UNSIGNED DEFAULT NULL COMMENT 'Board DAC, one and the same for all 16 channels (DAC/mV)',
-    FADC_GAIN 		  		            FLOAT(10,5) DEFAULT NULL COMMENT 'Board Gains, same for all channels (MeV/channel)',
-    FADC_ACCUMULATOR_SCALER_MODE_MASK 	VARCHAR(255) DEFAULT NULL COMMENT 'Accumulator scaler mode: 0=Default, TET based pulse integration, 1=Sum all samples',
+    -- DAC, Gain & Accumulator Configuration 
+    fadc_dac                           SMALLINT UNSIGNED DEFAULT NULL COMMENT 'Board DAC, one and the same for all 16 channels (DAC/mV)', 
+    fadc_gain                          FLOAT(10,5) DEFAULT NULL COMMENT 'Board Gains, same for all channels (MeV/channel)', 
+    fadc_accumulator_scaler_mode_mask  VARCHAR(255) DEFAULT NULL COMMENT 'Accumulator scaler mode: 0=Default, TET based pulse integration, 1=Sum all samples', 
 
-    -- Møller Discriminator & Trigger Logic Settings
-    FADC_MOLLER 	      VARCHAR(255) DEFAULT NULL COMMENT 'L_OFFSET, R_OFFSET, L_SUM_THR, R_SUM_THR, DISC_WIDTH, DISC_MODE parameters',
-    FADC_L_OFFSET 	      FLOAT(10,5) COMMENT 'ADC amplitude subtracted from the sum of the 4 left channels i.e. the sum pedestal',
-    FADC_R_OFFSET 	      FLOAT(10,5) COMMENT 'ADC amplitude subtracted from the sum of the 4 right channels i.e. the sum pedestal',
-    FADC_DISC_WIDTH 	  FLOAT(10,5) COMMENT 'Coincidence with in 4ns units (the left/right sum discriminator width)',
-    FADC_DISC_MODE 	      TINYINT(1) COMMENT 'When 0 the left/right sum discriminators are operating in non-updating mode',
-    FADC_L_SUM_THR 	      FLOAT(10,5) COMMENT 'Threshold which the left sum must pass',
-    FADC_R_SUM_THR 	      FLOAT(10,5) COMMENT 'Threshold which the right sum must pass',
-    FADC_TRG_SEL 	      TINYINT(1) DEFAULT NULL COMMENT '0=multiplicity, 1=moller-AND, 2=moller-OR',
-    FADC_TRG_WIDTH 	      SMALLINT UNSIGNED DEFAULT NULL COMMENT 'Stretches pulse width of channel over threshold in 4ns ticks for TI input',
+    -- Møller Discriminator & Trigger Logic Settings 
+    fadc_moller     VARCHAR(255) DEFAULT NULL COMMENT 'L_OFFSET, R_OFFSET, L_SUM_THR, R_SUM_THR, DISC_WIDTH, DISC_MODE parameters', 
+    fadc_l_offset   FLOAT(10,5) COMMENT 'ADC amplitude subtracted from the sum of the 4 left channels i.e. the sum pedestal', 
+    fadc_r_offset   FLOAT(10,5) COMMENT 'ADC amplitude subtracted from the sum of the 4 right channels i.e. the sum pedestal', 
+    fadc_disc_width FLOAT(10,5) COMMENT 'Coincidence with in 4ns units (the left/right sum discriminator width)', 
+    fadc_disc_mode  TINYINT(1) COMMENT 'When 0 the left/right sum discriminators are operating in non-updating mode', 
+    fadc_l_sum_thr  FLOAT(10,5) COMMENT 'Threshold which the left sum must pass', 
+    fadc_r_sum_thr  FLOAT(10,5) COMMENT 'Threshold which the right sum must pass', 
+    fadc_trg_sel    TINYINT(1) DEFAULT NULL COMMENT '0=multiplicity, 1=moller-AND, 2=moller-OR', 
+    fadc_trg_width  SMALLINT UNSIGNED DEFAULT NULL COMMENT 'Stretches pulse width of channel over threshold in 4ns ticks for TI input', 
 
-    -- Pedestal & Channel Threshold Overrides
-    FADC_ALLCH_PED 	      TEXT DEFAULT NULL COMMENT 'Pedestal values for all 16 channels',
-    FADC_CH_PED    	      VARCHAR(255) DEFAULT NULL COMMENT 'Specific channel pedestal override setting',
-    FADC_CH_TET 	      VARCHAR(255) DEFAULT NULL COMMENT 'Specific channel hit threshold override setting',
-    
-    -- Pedestals (Ped0 ... Ped15)
-    FADC_ped0        FLOAT(10,5) COMMENT 'Pedestal (ADC units) channel 0' ,
-    FADC_ped1        FLOAT(10,5) COMMENT 'Pedestal (ADC units) channel 1', 
-    FADC_ped2        FLOAT(10,5) COMMENT 'Pedestal (ADC units) channel 2' ,
-    FADC_ped3        FLOAT(10,5) COMMENT 'Pedestal (ADC units) channel 3' ,
-    FADC_ped4        FLOAT(10,5) COMMENT 'Pedestal (ADC units) channel 4' ,	
-    FADC_ped5        FLOAT(10,5) COMMENT 'Pedestal (ADC units) channel 5' ,
-    FADC_ped6        FLOAT(10,5) COMMENT 'Pedestal (ADC units) channel 6' ,
-    FADC_ped7        FLOAT(10,5) COMMENT 'Pedestal (ADC units) channel 7' ,
-    FADC_ped8        FLOAT(10,5) COMMENT 'Pedestal (ADC units) channel 8' ,
-    FADC_ped9        FLOAT(10,5) COMMENT 'Pedestal (ADC units) channel 9' ,
-    FADC_ped10       FLOAT(10,5) COMMENT 'Pedestal (ADC units) channel 10', 
-    FADC_ped11       FLOAT(10,5) COMMENT 'Pedestal (ADC units) channel 11',
-    FADC_ped12       FLOAT(10,5) COMMENT 'Pedestal (ADC units) channel 12', 
-    FADC_ped13       FLOAT(10,5) COMMENT 'Pedestal (ADC units) channel 13',	
-    FADC_ped14       FLOAT(10,5) COMMENT 'Pedestal (ADC units) channel 14', 
-    FADC_ped15       FLOAT(10,5) COMMENT 'Pedestal (ADC units) channel 15',
+    -- Pedestal & Channel Threshold Overrides 
+    fadc_allch_ped  TEXT DEFAULT NULL COMMENT 'Pedestal values for all 16 channels', 
+    fadc_ch_ped     VARCHAR(255) DEFAULT NULL COMMENT 'Specific channel pedestal override setting', 
+    fadc_ch_tet     VARCHAR(255) DEFAULT NULL COMMENT 'Specific channel hit threshold override setting', 
 
-    -- TET Thesholds (TET0 ... TET15)
-    FADC_TET0        SMALLINT UNSIGNED COMMENT 'TET threshold (ADC units) channel 0', 
-    FADC_TET1        SMALLINT UNSIGNED COMMENT 'TET threshold (ADC units) channel 1', 
-    FADC_TET2        SMALLINT UNSIGNED COMMENT 'TET threshold (ADC units) channel 2', 
-    FADC_TET3        SMALLINT UNSIGNED COMMENT 'TET threshold (ADC units) channel 3', 
-    FADC_TET4        SMALLINT UNSIGNED COMMENT 'TET threshold (ADC units) channel 4', 
-    FADC_TET5        SMALLINT UNSIGNED COMMENT 'TET threshold (ADC units) channel 5', 
-    FADC_TET6        SMALLINT UNSIGNED COMMENT 'TET threshold (ADC units) channel 6', 
-    FADC_TET7        SMALLINT UNSIGNED COMMENT 'TET threshold (ADC units) channel 7', 
-    FADC_TET8        SMALLINT UNSIGNED COMMENT 'TET threshold (ADC units) channel 8', 
-    FADC_TET9        SMALLINT UNSIGNED COMMENT 'TET threshold (ADC units) channel 9', 
-    FADC_TET10       SMALLINT UNSIGNED COMMENT 'TET threshold (ADC units) channel 10', 
-    FADC_TET11       SMALLINT UNSIGNED COMMENT 'TET threshold (ADC units) channel 11', 
-    FADC_TET12       SMALLINT UNSIGNED COMMENT 'TET threshold (ADC units) channel 12', 
-    FADC_TET13       SMALLINT UNSIGNED COMMENT 'TET threshold (ADC units) channel 13', 
-    FADC_TET14       SMALLINT UNSIGNED COMMENT 'TET threshold (ADC units) channel 14', 
-    FADC_TET15       SMALLINT UNSIGNED COMMENT 'TET threshold (ADC units) channel 15', 
+    -- Pedestals (Ped0 ... Ped15) 
+    fadc_ped0  FLOAT(10,5) COMMENT 'Pedestal (ADC units) channel 0' , 
+    fadc_ped1  FLOAT(10,5) COMMENT 'Pedestal (ADC units) channel 1', 
+    fadc_ped2  FLOAT(10,5) COMMENT 'Pedestal (ADC units) channel 2' , 
+    fadc_ped3  FLOAT(10,5) COMMENT 'Pedestal (ADC units) channel 3' , 
+    fadc_ped4  FLOAT(10,5) COMMENT 'Pedestal (ADC units) channel 4' , 
+    fadc_ped5  FLOAT(10,5) COMMENT 'Pedestal (ADC units) channel 5' , 
+    fadc_ped6  FLOAT(10,5) COMMENT 'Pedestal (ADC units) channel 6' , 
+    fadc_ped7  FLOAT(10,5) COMMENT 'Pedestal (ADC units) channel 7' , 
+    fadc_ped8  FLOAT(10,5) COMMENT 'Pedestal (ADC units) channel 8' , 
+    fadc_ped9  FLOAT(10,5) COMMENT 'Pedestal (ADC units) channel 9' , 
+    fadc_ped10 FLOAT(10,5) COMMENT 'Pedestal (ADC units) channel 10', 
+    fadc_ped11 FLOAT(10,5) COMMENT 'Pedestal (ADC units) channel 11', 
+    fadc_ped12 FLOAT(10,5) COMMENT 'Pedestal (ADC units) channel 12', 
+    fadc_ped13 FLOAT(10,5) COMMENT 'Pedestal (ADC units) channel 13', 
+    fadc_ped14 FLOAT(10,5) COMMENT 'Pedestal (ADC units) channel 14', 
+    fadc_ped15 FLOAT(10,5) COMMENT 'Pedestal (ADC units) channel 15', 
+
+    -- TET Thesholds (TET0 ... TET15) 
+    fadc_tet0  SMALLINT UNSIGNED COMMENT 'TET threshold (ADC units) channel 0', 
+    fadc_tet1  SMALLINT UNSIGNED COMMENT 'TET threshold (ADC units) channel 1', 
+    fadc_tet2  SMALLINT UNSIGNED COMMENT 'TET threshold (ADC units) channel 2', 
+    fadc_tet3  SMALLINT UNSIGNED COMMENT 'TET threshold (ADC units) channel 3', 
+    fadc_tet4  SMALLINT UNSIGNED COMMENT 'TET threshold (ADC units) channel 4', 
+    fadc_tet5  SMALLINT UNSIGNED COMMENT 'TET threshold (ADC units) channel 5', 
+    fadc_tet6  SMALLINT UNSIGNED COMMENT 'TET threshold (ADC units) channel 6', 
+    fadc_tet7  SMALLINT UNSIGNED COMMENT 'TET threshold (ADC units) channel 7', 
+    fadc_tet8  SMALLINT UNSIGNED COMMENT 'TET threshold (ADC units) channel 8', 
+    fadc_tet9  SMALLINT UNSIGNED COMMENT 'TET threshold (ADC units) channel 9', 
+    fadc_tet10 SMALLINT UNSIGNED COMMENT 'TET threshold (ADC units) channel 10', 
+    fadc_tet11 SMALLINT UNSIGNED COMMENT 'TET threshold (ADC units) channel 11', 
+    fadc_tet12 SMALLINT UNSIGNED COMMENT 'TET threshold (ADC units) channel 12', 
+    fadc_tet13 SMALLINT UNSIGNED COMMENT 'TET threshold (ADC units) channel 13', 
+    fadc_tet14 SMALLINT UNSIGNED COMMENT 'TET threshold (ADC units) channel 14', 
+    fadc_tet15 SMALLINT UNSIGNED COMMENT 'TET threshold (ADC units) channel 15',
 
     last_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP 
         COMMENT 'Timestamp of last record update',
