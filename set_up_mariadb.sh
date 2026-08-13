@@ -114,17 +114,22 @@ CREATE TABLE IF NOT EXISTS DAQ_config (
     fadc_allch_mode      VARCHAR(255) DEFAULT NULL COMMENT 'Set the FADC mode for each channel', 
 
     -- Windowing & Timing Definitions 
-    fadc_w_offset  SMALLINT UNSIGNED DEFAULT NULL COMMENT 'Number of ns back from trigger point', 
+    fadc_allch_w_offset  SMALLINT UNSIGNED DEFAULT NULL COMMENT 'Number of ns back from trigger point set channel by channel', 
+    fadc_allch_w_width   SMALLINT UNSIGNED DEFAULT NULL COMMENT 'Number of ns to include in trigger window set channel by channel', 
+    fadc_allch_nsb       SMALLINT UNSIGNED DEFAULT NULL COMMENT 'Time (units: ns) before threshold crossing to include in integral set channel by channel', 
+    fadc_allch_nsa       SMALLINT UNSIGNED DEFAULT NULL COMMENT 'Time (units: ns) after threshold crossing to include in integral set channel by channel', 
+    fadcw_offset  SMALLINT UNSIGNED DEFAULT NULL COMMENT 'Number of ns back from trigger point', 
     fadc_w_width   SMALLINT UNSIGNED DEFAULT NULL COMMENT 'Number of ns to include in trigger window', 
     fadc_nsb       SMALLINT UNSIGNED DEFAULT NULL COMMENT 'Time (units: ns) before threshold crossing to include in integral', 
     fadc_nsa       SMALLINT UNSIGNED DEFAULT NULL COMMENT 'Time (units: ns) after threshold crossing to include in integral', 
 
     -- Peak Processing & Pedestal Limits 
-    fadc_npeak   SMALLINT UNSIGNED DEFAULT NULL COMMENT 'Number of Pulses allowed for each window', 
-    fadc_nped    SMALLINT UNSIGNED DEFAULT NULL COMMENT 'Number of samples included in the pedestal sum', 
-    fadc_maxped  SMALLINT UNSIGNED DEFAULT NULL COMMENT 'Maximum value of sample to be included in pedestal sum (0--1023)', 
-    fadc_nsat    SMALLINT UNSIGNED DEFAULT NULL COMMENT 'Number of consecutive samples over threshold for valid pulse (1--4)', 
-    fadc_tet     SMALLINT UNSIGNED DEFAULT NULL COMMENT 'Fadc channel hit threshold (adc channel). May be overridden by individual channel TETs', 
+    fadc_allch_npeak   SMALLINT UNSIGNED DEFAULT NULL COMMENT 'Max number of pulses allowed for each window set channel by channel', 
+    fadc_allch_maxped  SMALLINT UNSIGNED DEFAULT NULL COMMENT 'Maximum value of sample to be included in pedestal sum (0--1023) set channel by channel', 
+    fadc_allch_nsat    SMALLINT UNSIGNED DEFAULT NULL COMMENT 'Min number of consecutive samples over threshold for valid pulse (1--4) set channel by channel', 
+    fadc_npeak   SMALLINT UNSIGNED DEFAULT NULL COMMENT 'Max number of pulses allowed for each window set when all channels the same, otherwise -1', 
+    fadc_maxped  SMALLINT UNSIGNED DEFAULT NULL COMMENT 'Max value of sample to be included in pedestal sum (0--1023)set when all channels the same, otherwise -1', 
+    fadc_nsat    SMALLINT UNSIGNED DEFAULT NULL COMMENT 'Min number of consecutive samples over threshold for valid pulse (1--4) set when all channels the same, otherwise -1', 
 
     -- DAC, Gain & Accumulator Configuration 
     fadc_dac                           SMALLINT UNSIGNED DEFAULT NULL COMMENT 'Board DAC, one and the same for all 16 channels (DAC/mV)', 
@@ -132,7 +137,6 @@ CREATE TABLE IF NOT EXISTS DAQ_config (
     fadc_accumulator_scaler_mode_mask  VARCHAR(255) DEFAULT NULL COMMENT 'Accumulator scaler mode: 0=Default, TET based pulse integration, 1=Sum all samples', 
 
     -- Møller Discriminator & Trigger Logic Settings 
-    fadc_moller     VARCHAR(255) DEFAULT NULL COMMENT 'L_OFFSET, R_OFFSET, L_SUM_THR, R_SUM_THR, DISC_WIDTH, DISC_MODE parameters', 
     fadc_l_offset   FLOAT(10,5) COMMENT 'ADC amplitude subtracted from the sum of the 4 left channels i.e. the sum pedestal', 
     fadc_r_offset   FLOAT(10,5) COMMENT 'ADC amplitude subtracted from the sum of the 4 right channels i.e. the sum pedestal', 
     fadc_disc_width FLOAT(10,5) COMMENT 'Coincidence with in 4ns units (the left/right sum discriminator width)', 
@@ -142,46 +146,11 @@ CREATE TABLE IF NOT EXISTS DAQ_config (
     fadc_trg_sel    TINYINT(1) DEFAULT NULL COMMENT '0=multiplicity, 1=moller-AND, 2=moller-OR', 
     fadc_trg_width  SMALLINT UNSIGNED DEFAULT NULL COMMENT 'Stretches pulse width of channel over threshold in 4ns ticks for TI input', 
 
-    -- Pedestal & Channel Threshold Overrides 
-    fadc_allch_ped  TEXT DEFAULT NULL COMMENT 'Pedestal values for all 16 channels', 
-    fadc_ch_ped     VARCHAR(255) DEFAULT NULL COMMENT 'Specific channel pedestal override setting', 
-    fadc_ch_tet     VARCHAR(255) DEFAULT NULL COMMENT 'Specific channel hit threshold override setting', 
-
-    -- Pedestals (Ped0 ... Ped15) 
-    fadc_ped0  FLOAT(10,5) COMMENT 'Pedestal (ADC units) channel 0' , 
-    fadc_ped1  FLOAT(10,5) COMMENT 'Pedestal (ADC units) channel 1', 
-    fadc_ped2  FLOAT(10,5) COMMENT 'Pedestal (ADC units) channel 2' , 
-    fadc_ped3  FLOAT(10,5) COMMENT 'Pedestal (ADC units) channel 3' , 
-    fadc_ped4  FLOAT(10,5) COMMENT 'Pedestal (ADC units) channel 4' , 
-    fadc_ped5  FLOAT(10,5) COMMENT 'Pedestal (ADC units) channel 5' , 
-    fadc_ped6  FLOAT(10,5) COMMENT 'Pedestal (ADC units) channel 6' , 
-    fadc_ped7  FLOAT(10,5) COMMENT 'Pedestal (ADC units) channel 7' , 
-    fadc_ped8  FLOAT(10,5) COMMENT 'Pedestal (ADC units) channel 8' , 
-    fadc_ped9  FLOAT(10,5) COMMENT 'Pedestal (ADC units) channel 9' , 
-    fadc_ped10 FLOAT(10,5) COMMENT 'Pedestal (ADC units) channel 10', 
-    fadc_ped11 FLOAT(10,5) COMMENT 'Pedestal (ADC units) channel 11', 
-    fadc_ped12 FLOAT(10,5) COMMENT 'Pedestal (ADC units) channel 12', 
-    fadc_ped13 FLOAT(10,5) COMMENT 'Pedestal (ADC units) channel 13', 
-    fadc_ped14 FLOAT(10,5) COMMENT 'Pedestal (ADC units) channel 14', 
-    fadc_ped15 FLOAT(10,5) COMMENT 'Pedestal (ADC units) channel 15', 
-
-    -- TET Thesholds (TET0 ... TET15) 
-    fadc_tet0  SMALLINT UNSIGNED COMMENT 'TET threshold (ADC units) channel 0', 
-    fadc_tet1  SMALLINT UNSIGNED COMMENT 'TET threshold (ADC units) channel 1', 
-    fadc_tet2  SMALLINT UNSIGNED COMMENT 'TET threshold (ADC units) channel 2', 
-    fadc_tet3  SMALLINT UNSIGNED COMMENT 'TET threshold (ADC units) channel 3', 
-    fadc_tet4  SMALLINT UNSIGNED COMMENT 'TET threshold (ADC units) channel 4', 
-    fadc_tet5  SMALLINT UNSIGNED COMMENT 'TET threshold (ADC units) channel 5', 
-    fadc_tet6  SMALLINT UNSIGNED COMMENT 'TET threshold (ADC units) channel 6', 
-    fadc_tet7  SMALLINT UNSIGNED COMMENT 'TET threshold (ADC units) channel 7', 
-    fadc_tet8  SMALLINT UNSIGNED COMMENT 'TET threshold (ADC units) channel 8', 
-    fadc_tet9  SMALLINT UNSIGNED COMMENT 'TET threshold (ADC units) channel 9', 
-    fadc_tet10 SMALLINT UNSIGNED COMMENT 'TET threshold (ADC units) channel 10', 
-    fadc_tet11 SMALLINT UNSIGNED COMMENT 'TET threshold (ADC units) channel 11', 
-    fadc_tet12 SMALLINT UNSIGNED COMMENT 'TET threshold (ADC units) channel 12', 
-    fadc_tet13 SMALLINT UNSIGNED COMMENT 'TET threshold (ADC units) channel 13', 
-    fadc_tet14 SMALLINT UNSIGNED COMMENT 'TET threshold (ADC units) channel 14', 
-    fadc_tet15 SMALLINT UNSIGNED COMMENT 'TET threshold (ADC units) channel 15',
+    -- Pedestal & Channel Threshold
+    fadc_allch_ped   TEXT DEFAULT NULL COMMENT 'Pedestal values for all 16 channels', 
+    fadc_ped         TEXT DEFAULT NULL COMMENT 'Pedestal value set when same for all 16 channels, otherwise -1', 
+    fadc_allch_tet   VARCHAR(255) DEFAULT NULL COMMENT 'Specific channel hit threshold override setting', 
+    fadc_tet         VARCHAR(255) DEFAULT NULL COMMENT 'Channel hit threshold set when same for all 16 channels, otherwise -1', 
 
     last_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP 
         COMMENT 'Timestamp of last record update',
