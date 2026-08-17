@@ -101,7 +101,8 @@ CREATE TABLE IF NOT EXISTS Run_info (
 -- 2. DAQ_config Table
 CREATE TABLE IF NOT EXISTS DAQ_config (
     run_number INT UNSIGNED PRIMARY KEY,
-    
+    block_level   SMALLINT,
+    buffer_level  SMALLINT,
     
     -- Crate & Slot Identification 
     fadc_crate    VARCHAR(255) DEFAULT NULL COMMENT 'Crate identifier or hostname (e.g., all, hapolmollervme.jlab.org)', 
@@ -118,13 +119,14 @@ CREATE TABLE IF NOT EXISTS DAQ_config (
     fadc_allch_w_width   SMALLINT UNSIGNED DEFAULT NULL COMMENT 'Number of ns to include in trigger window set channel by channel', 
     fadc_allch_nsb       SMALLINT UNSIGNED DEFAULT NULL COMMENT 'Time (units: ns) before threshold crossing to include in integral set channel by channel', 
     fadc_allch_nsa       SMALLINT UNSIGNED DEFAULT NULL COMMENT 'Time (units: ns) after threshold crossing to include in integral set channel by channel', 
-    fadcw_offset  SMALLINT UNSIGNED DEFAULT NULL COMMENT 'Number of ns back from trigger point', 
-    fadc_w_width   SMALLINT UNSIGNED DEFAULT NULL COMMENT 'Number of ns to include in trigger window', 
-    fadc_nsb       SMALLINT UNSIGNED DEFAULT NULL COMMENT 'Time (units: ns) before threshold crossing to include in integral', 
-    fadc_nsa       SMALLINT UNSIGNED DEFAULT NULL COMMENT 'Time (units: ns) after threshold crossing to include in integral', 
+    fadc_w_offset  SMALLINT UNSIGNED DEFAULT NULL COMMENT 'Number of ns back from trigger point set if equal for all channels', 
+    fadc_w_width   SMALLINT UNSIGNED DEFAULT NULL COMMENT 'Number of ns to include in trigger window set if equal for all channels', 
+    fadc_nsb       SMALLINT UNSIGNED DEFAULT NULL COMMENT 'Time (units: ns) before threshold crossing to include in integral set if equal for all channels', 
+    fadc_nsa       SMALLINT UNSIGNED DEFAULT NULL COMMENT 'Time (units: ns) after threshold crossing to include in integral set if equal for all channels', 
 
     -- Peak Processing & Pedestal Limits 
     fadc_allch_npeak   SMALLINT UNSIGNED DEFAULT NULL COMMENT 'Max number of pulses allowed for each window set channel by channel', 
+    fadc_allch_nped    SMALLINT UNSIGNED DEFAULT NULL COMMENT 'Numbers samples included in pedestal sum set channel by channel', 
     fadc_allch_maxped  SMALLINT UNSIGNED DEFAULT NULL COMMENT 'Maximum value of sample to be included in pedestal sum (0--1023) set channel by channel', 
     fadc_allch_nsat    SMALLINT UNSIGNED DEFAULT NULL COMMENT 'Min number of consecutive samples over threshold for valid pulse (1--4) set channel by channel', 
     fadc_npeak   SMALLINT UNSIGNED DEFAULT NULL COMMENT 'Max number of pulses allowed for each window set when all channels the same, otherwise -1', 
