@@ -112,8 +112,6 @@ CREATE TABLE IF NOT EXISTS DAQ_config (
 
     -- Channel Masks & Operating Modes 
     fadc_adc_mask        VARCHAR(255) DEFAULT NULL COMMENT 'ADC channel enable mask', 
-    fadc_trg_mask        VARCHAR(255) DEFAULT NULL COMMENT 'Trigger channel enable mask', 
-    fadc_tet_ignore_mask VARCHAR(255) DEFAULT NULL COMMENT 'Force readout of channel mask (i.e. ignore threshold for readout)', 
     fadc_allch_mode      VARCHAR(255) DEFAULT NULL COMMENT 'FADC mode for each channel', 
     fadc_mode            VARCHAR(255) DEFAULT NULL COMMENT 'FADC mode set if equal for all channels', 
 
