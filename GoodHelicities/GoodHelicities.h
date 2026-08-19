@@ -123,6 +123,7 @@ public:
     int    fRun = 0;
     int    fDelayWindows{8};
     double fTsettleFreq{29.5596};
+    double fTsettleThreshold{2000};
     double fSumThreshold{90}; // ADC integral left/right sum threshold
     double fADCthreshold{20}; // ADC integral individual channel threshold
     double fNIMthreshold{1e4}; // ADC integral channel threshold for NIM-level signals: QRT and HEL

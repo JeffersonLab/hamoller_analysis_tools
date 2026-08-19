@@ -694,7 +694,7 @@ void GoodHelicities::FindGoodHelicities(TTrain *tr, bool ped_sub)
         {
             int c=(int)chan[k];
 	    // std::cout<<i<<" adc["<<c<<"]: "<<adc[k]<<" "<<pedest[c]<<" > "<<fADCthreshold<<std::endl;
-            if(c==8 && adc[k]-pedest[c]>fADCthreshold)
+            if(c==8 && adc[k] > fTsettleThreshold)
 	    {
 	       Tsettle = true;
 	       time_sec = tEvt * 4e-9;//only updated inside Tsettle

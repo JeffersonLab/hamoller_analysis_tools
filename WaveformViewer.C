@@ -79,8 +79,9 @@ public:
       if (npmtchan == 0) {
 	 std::cout << "No PMT channels in this event\n";
       }
-      int trig[3] = {0,0,0}, n = npmtchan-1;
+      int trig[4] = {0,0,0,0}, n = npmtchan-1;
       while (++n < nchan){ // find trigger channels that fired
+	 if(chan[n]==8)trig[3]=1;//MPS
 	 if(chan[n]==13)trig[0]=1;//coinc
 	 if(chan[n]==14)trig[1]=1;//left
 	 if(chan[n]==15)trig[2]=1;//right
@@ -103,7 +104,7 @@ public:
       }
       for (int i = 0; i < nchan; i++) {
 	 int ch = chan[i];
-	 if (ch < 13) continue;
+	 if (ch < 13 && ch !=8 ) continue;
 
 	 std::vector<double> wf(Nsamp);
 	 for (int j = 0; j < Nsamp; j++) {
@@ -204,6 +205,28 @@ public:
             label->SetShadowColor(0);
             label->AddText(Form("Left Trig"));
             label->Draw();
+      }
+      if(trig[3]>0){
+            auto& wf = waveforms[8];
+            TGraph* g = new TGraph(wf.size());
+
+            for (size_t i = 0; i < wf.size(); i++)
+	       g->SetPoint(i, i, wf[i]);
+
+            g->SetTitle("");
+	    g->SetLineWidth(2);
+	    g->SetLineColor(kGreen+2);
+
+            TPaveText* label = new TPaveText(0.1, 0.85, 0.25, 0.95, "NDC");
+            label->SetFillStyle(0);
+            label->SetBorderSize(0);
+            label->SetShadowColor(0);
+            label->AddText(Form("Left Trig"));
+	    if(trig[1]>0){
+	       g->Draw("SAMELP");
+	       label->Draw();
+	    }else
+	       g->Draw("ALP");
       }
       c->cd(8);
       if(trig[2]>0){

@@ -24,28 +24,28 @@ set -u
 SQL_SCRIPT=$(cat <<'EOF'
 USE hamoller_db;
 -- Lookup table for Run Types
-CREATE TABLE run_type_lookup (
+CREATE TABLE IF NOT EXISTS run_type_lookup (
     code VARCHAR(32) PRIMARY KEY,
     display_label VARCHAR(64) NOT NULL
 );
 
-INSERT INTO run_type_lookup (code, display_label) VALUES
+INSERT IGNORE INTO run_type_lookup (code, display_label) VALUES
     ('RATE_SCAN',       'Rate scan'),
     ('POLARIZATION',    'Polarization'),
     ('SYSTEMATIC_STUDY','Systematic study'),
-    ('BLEEDTHROUGH',     'Bleedthrough'),
+    ('BLEEDTHROUGH',    'Bleedthrough'),
     ('GAIN_MATCHING',   'Gain matching'),
     ('THRESHOLD_CHECK', 'Threshold check'),
     ('TEST',            'Test'),
     ('OTHER',           'Other');
 
 -- Lookup table for Run Quality
-CREATE TABLE run_quality_lookup (
+CREATE TABLE IF NOT EXISTS run_quality_lookup (
     code VARCHAR(32) PRIMARY KEY,
     display_label VARCHAR(64) NOT NULL
 );
 
-INSERT INTO run_quality_lookup (code, display_label) VALUES
+INSERT IGNORE INTO run_quality_lookup (code, display_label) VALUES
     ('GOOD',         'Good'),
     ('BAD',          'Bad'),
     ('SUSPECT',      'Suspect'),
@@ -59,8 +59,8 @@ CREATE TABLE IF NOT EXISTS Run_info (
     run_experiment  	   VARCHAR(255) COMMENT 'Name of experiment',
     run_start_datetime 	   VARCHAR(50) COMMENT "Start of run time stamp -- fits Linux date default string (e.g., Fri Jul 31 16:54:21 EDT 2026)",
     run_end_datetime 	   VARCHAR(50)COMMENT 'End of run time stamp -- fits Linux date default string (e.g., Fri Jul 31 16:54:21 EDT 2026)',
-    run_start_unix 	       VARCHAR(50) COMMENT 'Start of run Unix time in seconds')
-    run_end_unix 	       VARCHAR(50)COMMENT 'End of run Unix time in seconds',
+    run_start_unix 	   INT UNSIGNED COMMENT 'Start of run Unix time in seconds',
+    run_end_unix 	   INT UNSIGNED COMMENT 'End of run Unix time in seconds',
     run_length             INT UNSIGNED NULL COMMENT 'Run length in seconds',
  
     -- Lookup fields with fixed options
@@ -81,12 +81,12 @@ CREATE TABLE IF NOT EXISTS Run_info (
         ON DELETE RESTRICT,
         
      -- Trigger Prescales
-    trig_ps1 INT COMMENT 'Trigger 1 MPS prescale: -1 distabled, 0 no prescale, 1 keep every other event, 2 keep every 3rd event',
-    trig_ps2 INT COMMENT 'Trigger 2 prescale: -1 distabled, 0 no prescale, 1 keep every other event, 2 keep every 3rd event',
-    trig_ps3 INT COMMENT 'Trigger 3 Leftsum prescale: -1 distabled, 0 no prescale, 1 keep every other event, 2 keep every 3rd event',
-    trig_ps4 INT COMMENT 'Trigger 4 Rightsum prescale: -1 distabled, 0 no prescale, 1 keep every other event, 2 keep every 3rd event',
-    trig_ps5 INT COMMENT 'Trigger 5 prescale: -1 distabled, 0 no prescale, 1 keep every other event, 2 keep every 3rd event',
-    trig_ps6 INT COMMENT 'Trigger 6 Coinc prescale: -1 distabled, 0 no prescale, 1 keep every other event, 2 keep every 3rd event',
+    trig_ps1 INT COMMENT 'Trigger 1 MPS prescale: -1 disabled, 0 no prescale, 1 keep every other event, 2 keep every 3rd event',
+    trig_ps2 INT COMMENT 'Trigger 2 prescale: -1 disabled, 0 no prescale, 1 keep every other event, 2 keep every 3rd event',
+    trig_ps3 INT COMMENT 'Trigger 3 Leftsum prescale: -1 disabled, 0 no prescale, 1 keep every other event, 2 keep every 3rd event',
+    trig_ps4 INT COMMENT 'Trigger 4 Rightsum prescale: -1 disabled, 0 no prescale, 1 keep every other event, 2 keep every 3rd event',
+    trig_ps5 INT COMMENT 'Trigger 5 prescale: -1 disabled, 0 no prescale, 1 keep every other event, 2 keep every 3rd event',
+    trig_ps6 INT COMMENT 'Trigger 6 Coinc prescale: -1 disable, 0 no prescale, 1 keep every other event, 2 keep every 3rd event',
 
     -- Beam and Target 
     beam_sigma_x 	       FLOAT(10,5) COMMENT '1 sigma x-width (mm) of beam from harp scan',
@@ -119,20 +119,20 @@ CREATE TABLE IF NOT EXISTS DAQ_config (
 
 
     -- Windowing & Timing Definitions 
-    fadc_allch_w_offset  SMALLINT UNSIGNED DEFAULT NULL COMMENT 'Number of ns back from trigger point set channel by channel', 
-    fadc_allch_w_width   SMALLINT UNSIGNED DEFAULT NULL COMMENT 'Number of ns to include in trigger window set channel by channel', 
-    fadc_allch_nsb       SMALLINT UNSIGNED DEFAULT NULL COMMENT 'Time (units: ns) before threshold crossing to include in integral set channel by channel', 
-    fadc_allch_nsa       SMALLINT UNSIGNED DEFAULT NULL COMMENT 'Time (units: ns) after threshold crossing to include in integral set channel by channel', 
+    fadc_allch_w_offset  VARCHAR(255) DEFAULT NULL COMMENT 'Number of ns back from trigger point set channel by channel', 
+    fadc_allch_w_width   VARCHAR(255) DEFAULT NULL COMMENT 'Number of ns to include in trigger window set channel by channel',	
+    fadc_allch_nsb       VARCHAR(255) DEFAULT NULL COMMENT 'Time (units: ns) before threshold crossing to include in integral set channel by channel', 
+    fadc_allch_nsa       VARCHAR(255) DEFAULT NULL COMMENT 'Time (units: ns) after threshold crossing to include in integral set channel by channel', 
     fadc_w_offset  SMALLINT UNSIGNED DEFAULT NULL COMMENT 'Number of ns back from trigger point set if equal for all channels', 
     fadc_w_width   SMALLINT UNSIGNED DEFAULT NULL COMMENT 'Number of ns to include in trigger window set if equal for all channels', 
     fadc_nsb       SMALLINT UNSIGNED DEFAULT NULL COMMENT 'Time (units: ns) before threshold crossing to include in integral set if equal for all channels', 
     fadc_nsa       SMALLINT UNSIGNED DEFAULT NULL COMMENT 'Time (units: ns) after threshold crossing to include in integral set if equal for all channels', 
 
     -- Peak Processing & Pedestal Limits 
-    fadc_allch_npeak   SMALLINT UNSIGNED DEFAULT NULL COMMENT 'Max number of pulses allowed for each window set channel by channel', 
-    fadc_allch_nped    SMALLINT UNSIGNED DEFAULT NULL COMMENT 'Number of samples included in pedestal sum set channel by channel', 
-    fadc_allch_maxped  SMALLINT UNSIGNED DEFAULT NULL COMMENT 'Maximum value of sample to be included in pedestal sum (0--1023) set channel by channel', 
-    fadc_allch_nsat    SMALLINT UNSIGNED DEFAULT NULL COMMENT 'Min number of consecutive samples over threshold for valid pulse (1--4) set channel by channel', 
+    fadc_allch_npeak    VARCHAR(255) DEFAULT NULL COMMENT 'Max number of pulses allowed for each window set channel by channel', 
+    fadc_allch_nped     VARCHAR(255) DEFAULT NULL COMMENT 'Number of samples included in pedestal sum set channel by channel', 
+    fadc_allch_maxped   VARCHAR(255) DEFAULT NULL COMMENT 'Maximum value of sample to be included in pedestal sum (0--1023) set channel by channel', 
+    fadc_allch_nsat     VARCHAR(255) DEFAULT NULL COMMENT 'Min number of consecutive samples over threshold for valid pulse (1--4) set channel by channel', 
     fadc_npeak   SMALLINT UNSIGNED DEFAULT NULL COMMENT 'Max number of pulses allowed for each window set when all channels the same, otherwise -1', 
     fadc_nped    SMALLINT UNSIGNED DEFAULT NULL COMMENT 'Number of samples to be included in pedestal sum set when all channels the same, otherwise -1', 
     fadc_maxped  SMALLINT UNSIGNED DEFAULT NULL COMMENT 'Max value of sample to be included in pedestal sum (0--1023)set when all channels the same, otherwise -1', 
