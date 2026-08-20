@@ -126,6 +126,7 @@ CREATE TABLE IF NOT EXISTS DAQ_config (
     fadc_nsb       SMALLINT UNSIGNED DEFAULT NULL COMMENT 'Time (units: ns) before threshold crossing to include in integral set if equal for all channels', 
     fadc_nsa       SMALLINT UNSIGNED DEFAULT NULL COMMENT 'Time (units: ns) after threshold crossing to include in integral set if equal for all channels', 
 
+
     -- Peak Processing & Pedestal Limits 
     fadc_allch_npeak    VARCHAR(255) DEFAULT NULL COMMENT 'Max number of pulses allowed for each window set channel by channel', 
     fadc_allch_nped     VARCHAR(255) DEFAULT NULL COMMENT 'Number of samples included in pedestal sum set channel by channel', 
@@ -136,10 +137,11 @@ CREATE TABLE IF NOT EXISTS DAQ_config (
     fadc_maxped  SMALLINT UNSIGNED DEFAULT NULL COMMENT 'Max value of sample to be included in pedestal sum (0--1023)set when all channels the same, otherwise -1', 
     fadc_nsat    SMALLINT UNSIGNED DEFAULT NULL COMMENT 'Min number of consecutive samples over threshold for valid pulse (1--4) set when all channels the same, otherwise -1', 
 
-    -- DAC, Gain & Accumulator Configuration 
-    fadc_dac                           SMALLINT UNSIGNED DEFAULT NULL COMMENT 'Board DAC, one and the same for all 16 channels (DAC/mV)', 
-    fadc_gain                          FLOAT(10,5) DEFAULT NULL COMMENT 'Board Gains, same for all channels (MeV/channel)', 
-    fadc_accumulator_scaler_mode_mask  VARCHAR(255) DEFAULT NULL COMMENT 'Accumulator scaler mode: 0=Default, TET based pulse integration, 1=Sum all samples', 
+    -- DAC, Gain & Accumulator Configuration
+    fadc_allch_dac                     VARCHAR(255) DEFAULT NULL COMMENT 'Board DAC set channel by channel (DAC/mB)',
+    fadc_dac                           SMALLINT UNSIGNED DEFAULT NULL COMMENT 'Board DAC set when all 16 channels the same, otherwise -1 (DAC/mV)', 
+    fadc_allch_gain                    VARCHAR(255) DEFAULT NULL COMMENT 'Board Gains set channel by channel (MeV/channel)', 
+    fadc_gain                          FLOAT(10,5) DEFAULT NULL COMMENT 'Board Gains set when all channels equal, otherwise -1 (MeV/channel)', 
 
     -- Møller Discriminator & Trigger Logic Settings 
     fadc_l_offset   FLOAT(10,5) COMMENT 'ADC amplitude subtracted from the sum of the 4 left channels i.e. the sum pedestal', 
@@ -156,6 +158,7 @@ CREATE TABLE IF NOT EXISTS DAQ_config (
     fadc_ped         TEXT DEFAULT NULL COMMENT 'Pedestal value set when same for all 16 channels, otherwise -1', 
     fadc_allch_tet   VARCHAR(255) DEFAULT NULL COMMENT 'Specific channel hit threshold override setting', 
     fadc_tet         VARCHAR(255) DEFAULT NULL COMMENT 'Channel hit threshold set when same for all 16 channels, otherwise -1', 
+
 
     last_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP 
         COMMENT 'Timestamp of last record update',
