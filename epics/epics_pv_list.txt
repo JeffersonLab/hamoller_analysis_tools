@@ -1,109 +1,109 @@
-HALLA:p                        epics_E_beam                   Beam energy, MeV Hall A                  [cite: 2]
-MMSINJEGAIN                    epics_E_inj                    Injector energy, MeV                    [cite: 2]
-MMSLIN1EGAIN                   epics_E_Slinac                 South linac energy, MeV                 [cite: 2]
-MMSLIN2EGAIN                   epics_E_Nlinac                 North linac energy, MeV                 [cite: 2]
-MMSHLAPASS                     epics_n_pass                   Passes Hall A                           [cite: 2]
-MMSHLBPASS                     N/A                            Passes Hall B                           [cite: 2]
-MMSHLCPASS                     N/A                            Passes Hall C                           [cite: 2]
-MMSHLDPASS                     N/A                            Passes Hall D                            [cite: 2]
-hac_bcm_average                epics_bcm_avg                  Beam Current Average                    [cite: 2]
-hac_unser_read                 epics_unser                    Current on Unser monitor                [cite: 2]
-hac_bcm_dvm1_current           epics_bcm_us                   Current on Upstream bcm                 [cite: 2]
-hac_bcm_dvm2_current           epics_bcm_ds                   Current on Downstream bcm               [cite: 2]
-IBC0L02Current                 epics_inj_bcm_tot              Injector Full Current Monitor 02        [cite: 2]
-hac_bcm_A1                     epics_bcm_a1_coeff             Upstream Cavity Coefficient             [cite: 2]
-hac_bcm_A2                     epics_bcm_a2_coeff             Downstream Cavity Coefficient           [cite: 2]
-IBC1H04CRCUR2                  epics_inj_bcm_halla            Injector Current Monitor Hall A         [cite: 2]
-IPM1H01.XPOS                   epics_bpm01_X                  Beam Position BPM01  X, mm              [cite: 2]
-IPM1H01.YPOS                   epics_bpm01_Y                  Beam Position BPM01  Y, mm              [cite: 2]
-IPM1H04.XPOS                   epics_bpm04_X                  Beam Position BPM04  X, mm              [cite: 2]
-IPM1H04.YPOS                   epics_bpm04_Y                  Beam Position BPM04  Y, mm              [cite: 2]
-IPM1H04A.XPOS                  epics_bpm04a_X                 Beam Position BPM04A  X, mm             [cite: 2]
-IPM1H04A.YPOS                  epics_bpm04a_Y                 Beam Position BPM04A  Y, mm             [cite: 2]
-MQO1H02M                       epics_q1_cur                   Quad Q1 (Amps)                          [cite: 2]
-MQM1H02M                       epics_q2_cur                   Quad Q2 (Amps)                           [cite: 2]
-MQO1H03M                       epics_q3_cur                   Quad Q3 (Amps)                          [cite: 2]
-MQO1H03AM                      epics_q4_cur                   Quad Q4 (Amps)                          [cite: 2]
-MMA1H01M                       epics_dip_cur                  Dipole  (Amps)                          [cite: 2]
-HAHFMROTENC                    epics_tgt_angle                Target Rotary Position(V)               [cite: 2]
-HAHFMROTSM.LLS                 epics_tgt_rot_neglimit         Rotary Negative Limit Switch             [cite: 2]
-HAHFMROTSM.HLS                 epics_tgt_rot_poslimit         Rotary Positive Limit Switch            [cite: 2]
-HAHFMROTSM.ATHM                epics_tgt_rot_athome           Rotary Home(Center) Switch              [cite: 2]
-HAHFMROTSM.RBV                 epics_tgt_angle_deg            Rotary Position in deg(from controller) [cite: 2]
-HAHFMLINENC                    epics_tgt_lin_pos              Target Linear Position(V)               [cite: 2]
-HAHFMLINSM.HLS                 epics_tgt_lin_hlimit           Linear Extended Limit Switch            [cite: 2]
-HAHFMLINSM.LLS                 epics_tgt_lin_llmit            Linear Retracted Limit Switch           [cite: 2]
-HAHFMLINSM.ATHM                epics_tgt_lin_athome           Linear Home switch                       [cite: 2]
-HAHFMLINSM.RBV                 epics_tgt_lin_pos_mm           Linear Position in mm                   [cite: 2]
-IGL1I00HALLAMODE               epics_las_mode_halla           Laser mode  Hall A                      [cite: 2]
-IGL1I00HALLBMODE               epics_las_mode_hallb           Laser mode  Hall B                      [cite: 2]
-IGL1I00HALLCMODE               epics_las_mode_hallc           Laser mode  Hall C                      [cite: 2]
-IGL1I00HALLDMODE               epics_las_mode_halld           Laser mode  Hall D                      [cite: 2]
-IGL1I00AI3                     epics_las_pow_halla            Laser power Hall A                      [cite: 2]
-IGL1I00AI4                     epics_las_pow_hallb            Laser power Hall B                       [cite: 2]
-IGL1I00AI5                     epics_las_pow_hallc            Laser power Hall C                      [cite: 2]
-IGL1I00AI6                     epics_las_pow_halld            Laser power Hall D                      [cite: 2]
-psub_aa_pos                    epics_las_attn_halla           Laser attenuation Hall A                [cite: 2]
-psub_ab_pos                    epics_las_attn_hallb           Laser attenuation Hall B                [cite: 2]
-psub_ac_pos                    epics_las_attn_hallc           Laser attenuation Hall C                [cite: 2]
-psub_ad_pos                    epics_las_attn_halld           Laser attenuation Hall D                 [cite: 2]
-SMRPOSA                        epics_slit_halla               Slit Position Hall A                    [cite: 2]
-SMRPOSB                        epics_slit_hallb               Slit Position Hall B                    [cite: 2]
-SMRPOSC                        epics_slit_hallc               Slit Position Hall C                    [cite: 2]
-SMRPOSD                        epics_slit_halld               Slit Position Hall D                    [cite: 2]
-IGL1I00OD16_16                 epics_ihwp                     Laser 1/2 wave plate                    [cite: 2]
-psub_pl_pos                    epics_rhwp                     Rotating 1/2 wave plate                 [cite: 2]
-MWF1I04.BDL                    epics_vwien_bdl                VWien BdL                               [cite: 2]
-MWF1I04.S                      epics_vwien_field              VWien field                             [cite: 2]
-VWienAngle                     epics_vwien_angle              VWien filter angle, deg                 [cite: 2]
-MFG1I04A.BDL                   epics_sol_a_bdl                Solenoid A BdL                          [cite: 2]
-MFG1I04A.S                     epics_sol_a_field              Solenoid A field                         [cite: 2]
-MFG1I04B.BDL                   epics_sol_b_bdl                Solenoid B BdL                          [cite: 2]
-MFG1I04B.S                     epics_sol_b_field              Solenoid B field                        [cite: 2]
-Phi_FG                         epics_sol_phi_fg               Solenoids angle, deg                    [cite: 2]
-MWF1I06.BDL                    epics_hwien_bdl                HWien BdL                               [cite: 2]
-MWF1I06.S                      epics_hwien_field              HWien field                             [cite: 2]
-HWienAngle                     epics_hwien_angle              HWien filter angle, deg                 [cite: 2]
-HELPATTERNd                    epics_hel_pattern              Helicity Mode ON/OFF Random/Toggle      [cite: 2]
-HELFREQ                        epics_hel_freq                 Helicity frequency                      [cite: 2]
-HELDELAYd                      epics_hel_delay                Helicity delay                          [cite: 2]
-HELTSETTLEd                    epics_t_settle                 MPS signal, usec                        [cite: 2]
-HELTSTABLEd                    epics_t_stable                 Helicity window, usec                   [cite: 2]
-IGL1I00AI7                     epics_pockels_v1               Pockels Cell Voltage 1                  [cite: 2]
-IGL1I00AI8                     epics_pockels_v2               Pockels Cell Voltage 2                  [cite: 2]
-R0L1PMES                       epics_las_a_rf_phase           Laser A RF phase degrees                [cite: 2]
-enlk4A:floatspare1             epics_las_a_src_cur            Laser A source current uA               [cite: 2]
-IPM1P02A.XPOS                  epics_bpm02a_X                 Beam Position BPM02A X, mm              [cite: 2]
-IPM1P02A.YPOS                  epics_bpm02a_Y                 Beam Position BPM02A Y, mm               [cite: 2]
-MBD1H04HM                      N/A                            MCZ1H04 horizontal corrector             [cite: 2]
-MBD1H04VM                      epics_mcz1h0v_cur              MCZ1H04 vertical corrector              [cite: 2]
-hamolpol:am430:target          epics_mol_pow_sup_cur          AM430 Current Setpoint (A)               [cite: 2]
-hamolpol:am430:targetRbck      epics_mol_mag_cur_set          AM430 Current Setpoint Readback (A)     [cite: 2]
-hamolpol:am430:turnOn          epics_mol_mag_htr_ctrl         AM430 Persistence Heater Control        [cite: 2]
-hamolpol:am430:magCurrent      epics_mol_mag_cur_meas         AM430 Measured Current (A)              [cite: 2]
-hamolpol:am430:magVoltage      epics_mol_mag_v_meas           AM430 Measured Voltage (A)              [cite: 2]
-hamolpol:am430:magField        epics_mol_mag_field_meas       AM430 Measured Field (T)                [cite: 2]
-hamolpol:am430:rampState       epics_mol_mag_ramp_state       AMS430 Ramp State                       [cite: 2]
-hamolpol:lk218_1:temp1         epics_mol_cooler_temp          Cryocooler Temperature (K)              [cite: 2]
-hamolpol:lk218_1:temp2         epics_mol_mag_T2temp           Magnet(T2) Temperature(K)               [cite: 2]
-hamolpol:lk218_1:temp6         epics_mol_mag_lead1_temp       Magnet Lead #1 (T6) Temperature(K)      [cite: 2]
-hamolpol:lk218_1:temp7         epics_mol_mag_lead2_temp       Magnet Lead #2 (T7) Temperature(K)       [cite: 2]
-hamolpol:lk450:fld             epics_mol_ext_gaussmeter       Magnet External Gaussmeter (kGs)        [cite: 2]
-hamolpol:CP2800:compMins       epics_cryo_comp_op_time        Cryomech CP1110 Compressor Oper.Time (m [cite: 2]
-hamolpol:CP2800:waterInTemp    epics_cryo_water_in_temp       Cryomech CP1110 Input Water Temp (C)    [cite: 2]
-hamolpol:CP2800:waterOutTemp   epics_cryo_water_out_temp      Cryomech CP1110 Output Water Temp (C)   [cite: 2]
-hamolpol:CP2800:pressHigh      epics_cryo_press_high          Cryomech CP1110 High Side Pressure (PSI [cite: 2]
-hamolpol:CP2800:pressLow       epics_cryo_press_low           Cryomech CP1110 Low Side Pressure (PSI) [cite: 2]
-IHVHAPOL:03:000:VMon           epics_det_hv_ch1               HA Moller HV Readback Ch 1 (V)           [cite: 2]
-IHVHAPOL:03:001:VMon           epics_det_hv_ch2               HA Moller HV Readback Ch 2 (V)          [cite: 2]
-IHVHAPOL:03:002:VMon           epics_det_hv_ch3               HA Moller HV Readback Ch 3 (V)          [cite: 2]
-IHVHAPOL:03:003:VMon           epics_det_hv_ch4               HA Moller HV Readback Ch 4 (V)          [cite: 2]
-IHVHAPOL:03:004:VMon           epics_det_hv_ch5               HA Moller HV Readback Ch 5 (V)          [cite: 2]
-IHVHAPOL:03:005:VMon           epics_det_hv_ch6               HA Moller HV Readback Ch 6 (V)          [cite: 2]
-IHVHAPOL:03:006:VMon           epics_det_hv_ch7               HA Moller HV Readback Ch 7 (V)           [cite: 2]
-IHVHAPOL:03:007:VMon           epics_det_hv_ch8               HA Moller HV Readback Ch 8 (V)          [cite: 2]
-pgunFreqDiv:A:frequencyVal     N/A                            HA RF frequency (499.0 or 249.5 MHz)    [cite: 2]
-IGL0I00HVPSkVolts              N/A                            Injector gun voltage (kV)               [cite: 2]
-HallAMolLock:Onoff             N/A                            HA Moller beam position lock On=1 Off=0  [cite: 2]
-psub_cx_pos                    N/A                            Injector spot x-position                [cite: 2]
-psub_cy_pos                    N/A                            Injector spot y-position                [cite: 2]
+HALLA:p                        epics_E_beam                   Beam energy, MeV Hall A
+MMSINJEGAIN                    epics_E_inj                    Injector energy, MeV
+MMSLIN1EGAIN                   epics_E_Slinac                 South linac energy, MeV
+MMSLIN2EGAIN                   epics_E_Nlinac                 North linac energy, MeV
+MMSHLAPASS                     epics_n_pass_hallA             Passes Hall A
+MMSHLBPASS                     epics_n_pass_hallB             Passes Hall B
+MMSHLCPASS                     epics_n_pass_hallC             Passes Hall C
+MMSHLDPASS                     epics_n_pass_hallD             Passes Hall D
+hac_bcm_average                epics_bcm_avg                  Beam Current Average
+hac_unser_read                 epics_unser                    Current on Unser monitor
+hac_bcm_dvm1_current           epics_bcm_us                   Current on Upstream bcm
+hac_bcm_dvm2_current           epics_bcm_ds                   Current on Downstream bcm
+IBC0L02Current                 epics_inj_bcm_tot              Injector Full Current Monitor
+hac_bcm_A1                     epics_bcm_a1_coeff             Upstream Cavity Coefficient
+hac_bcm_A2                     epics_bcm_a2_coeff             Downstream Cavity Coefficient
+IBC1H04CRCUR2                  epics_inj_bcm_halla            Injector Current Monitor Hall A
+IPM1H01.XPOS                   epics_bpm01_X                  Beam Position BPM01  X, mm
+IPM1H01.YPOS                   epics_bpm01_Y                  Beam Position BPM01  Y, mm
+IPM1H04.XPOS                   epics_bpm04_X                  Beam Position BPM04  X, mm
+IPM1H04.YPOS                   epics_bpm04_Y                  Beam Position BPM04  Y, mm
+IPM1H04A.XPOS                  epics_bpm04a_X                 Beam Position BPM04A  X, mm
+IPM1H04A.YPOS                  epics_bpm04a_Y                 Beam Position BPM04A  Y, mm
+MQO1H02M                       epics_q1_cur                   Quad Q1 (Amps)
+MQM1H02M                       epics_q2_cur                   Quad Q2 (Amps)
+MQO1H03M                       epics_q3_cur                   Quad Q3 (Amps)
+MQO1H03AM                      epics_q4_cur                   Quad Q4 (Amps)
+MMA1H01M                       epics_dip_cur                  Dipole  (Amps)
+HAHFMROTENC                    epics_tgt_angle                Target Rotary Position(V)
+HAHFMROTSM.LLS                 epics_tgt_rot_neglimit         Rotary Negative Limit Switch
+HAHFMROTSM.HLS                 epics_tgt_rot_poslimit         Rotary Positive Limit Switch
+HAHFMROTSM.ATHM                epics_tgt_rot_athome           Rotary Home(Center) Switch
+HAHFMROTSM.RBV                 epics_tgt_angle_deg            Rotary Position in deg(from controller)
+HAHFMLINENC                    epics_tgt_lin_pos              Target Linear Position(V)
+HAHFMLINSM.HLS                 epics_tgt_lin_hlimit           Linear Extended Limit Switch
+HAHFMLINSM.LLS                 epics_tgt_lin_llmit            Linear Retracted Limit Switch
+HAHFMLINSM.ATHM                epics_tgt_lin_athome           Linear Home switch
+HAHFMLINSM.RBV                 epics_tgt_lin_pos_mm           Linear Position in mm
+IGL1I00HALLAMODE               epics_las_mode_halla           Laser mode  Hall A
+IGL1I00HALLBMODE               epics_las_mode_hallb           Laser mode  Hall B
+IGL1I00HALLCMODE               epics_las_mode_hallc           Laser mode  Hall C
+IGL1I00HALLDMODE               epics_las_mode_halld           Laser mode  Hall D
+IGL1I00AI3                     epics_las_pow_halla            Laser power Hall A
+IGL1I00AI4                     epics_las_pow_hallb            Laser power Hall B
+IGL1I00AI5                     epics_las_pow_hallc            Laser power Hall C
+IGL1I00AI6                     epics_las_pow_halld            Laser power Hall D
+psub_aa_pos                    epics_las_attn_halla           Laser attenuation Hall A
+psub_ab_pos                    epics_las_attn_hallb           Laser attenuation Hall B
+psub_ac_pos                    epics_las_attn_hallc           Laser attenuation Hall C
+psub_ad_pos                    epics_las_attn_halld           Laser attenuation Hall D
+SMRPOSA                        epics_slit_halla               Slit Position Hall A
+SMRPOSB                        epics_slit_hallb               Slit Position Hall B
+SMRPOSC                        epics_slit_hallc               Slit Position Hall C
+SMRPOSD                        epics_slit_halld               Slit Position Hall D
+IGL1I00OD16_16                 epics_ihwp                     Laser 1/2 wave plate
+psub_pl_pos                    epics_rhwp                     Rotating 1/2 wave plate
+MWF1I04.BDL                    epics_vwien_bdl                VWien BdL
+MWF1I04.S                      epics_vwien_field              VWien field
+VWienAngle                     epics_vwien_angle              VWien filter angle, deg
+MFG1I04A.BDL                   epics_sol_a_bdl                Solenoid A BdL
+MFG1I04A.S                     epics_sol_a_field              Solenoid A field
+MFG1I04B.BDL                   epics_sol_b_bdl                Solenoid B BdL
+MFG1I04B.S                     epics_sol_b_field              Solenoid B field
+Phi_FG                         epics_sol_phi_fg               Solenoids angle, deg
+MWF1I06.BDL                    epics_hwien_bdl                HWien BdL
+MWF1I06.S                      epics_hwien_field              HWien field
+HWienAngle                     epics_hwien_angle              HWien filter angle, deg
+HELPATTERNd                    epics_hel_pattern              Helicity Mode ON/OFF Random/Toggle
+HELFREQ                        epics_hel_freq                 Helicity frequency
+HELDELAYd                      epics_hel_delay                Helicity delay
+HELTSETTLEd                    epics_t_settle                 MPS signal, usec
+HELTSTABLEd                    epics_t_stable                 Helicity window, usec
+IGL1I00AI7                     epics_pockels_v1               Pockels Cell Voltage 1
+IGL1I00AI8                     epics_pockels_v2               Pockels Cell Voltage 2
+R0L1PMES                       epics_las_a_rf_phase           Laser A RF phase degrees
+enlk4A:floatspare1             epics_las_a_src_cur            Laser A source current uA
+IPM1P02A.XPOS                  epics_bpm02a_X                 Beam Position BPM02A X, mm
+IPM1P02A.YPOS                  epics_bpm02a_Y                 Beam Position BPM02A Y, mm
+MBD1H04HM                      epics_mcz1h0v_cur              MCZ1H04 horizontal corrector
+MBD1H04VM                      epics_mcz1h0v_cur              MCZ1H04 vertical corrector
+hamolpol:am430:target          epics_mol_pow_sup_cur          AM430 Current Setpoint (A)
+hamolpol:am430:targetRbck      epics_mol_mag_cur_set          AM430 Current Setpoint Readback (A)
+hamolpol:am430:turnOn          epics_mol_mag_htr_ctrl         AM430 Persistence Heater Control
+hamolpol:am430:magCurrent      epics_mol_mag_cur_meas         AM430 Measured Current (A)
+hamolpol:am430:magVoltage      epics_mol_mag_v_meas           AM430 Measured Voltage (A)
+hamolpol:am430:magField        epics_mol_mag_field_meas       AM430 Measured Field (T)
+hamolpol:am430:rampState       epics_mol_mag_ramp_state       AMS430 Ramp State
+hamolpol:lk218_1:temp1         epics_mol_cooler_temp          Cryocooler Temperature (K)
+hamolpol:lk218_1:temp2         epics_mol_mag_T2temp           Magnet(T2) Temperature(K)
+hamolpol:lk218_1:temp6         epics_mol_mag_lead1_temp       Magnet Lead #1 (T6) Temperature(K)
+hamolpol:lk218_1:temp7         epics_mol_mag_lead2_temp       Magnet Lead #2 (T7) Temperature(K)
+hamolpol:lk450:fld             epics_mol_ext_gaussmeter       Magnet External Gaussmeter (kGs)
+hamolpol:CP2800:compMins       epics_cryo_comp_op_time        Cryomech CP1110 Compressor Oper.Time (m
+hamolpol:CP2800:waterInTemp    epics_cryo_water_in_temp       Cryomech CP1110 Input Water Temp (C)
+hamolpol:CP2800:waterOutTemp   epics_cryo_water_out_temp      Cryomech CP1110 Output Water Temp (C)
+hamolpol:CP2800:pressHigh      epics_cryo_press_high          Cryomech CP1110 High Side Pressure (PSI)
+hamolpol:CP2800:pressLow       epics_cryo_press_low           Cryomech CP1110 Low Side Pressure (PSI)
+IHVHAPOL:03:000:VMon           epics_det_hv_ch1               HA Moller HV Readback Ch 1 (V)
+IHVHAPOL:03:001:VMon           epics_det_hv_ch2               HA Moller HV Readback Ch 2 (V)
+IHVHAPOL:03:002:VMon           epics_det_hv_ch3               HA Moller HV Readback Ch 3 (V)
+IHVHAPOL:03:003:VMon           epics_det_hv_ch4               HA Moller HV Readback Ch 4 (V)
+IHVHAPOL:03:004:VMon           epics_det_hv_ch5               HA Moller HV Readback Ch 5 (V)
+IHVHAPOL:03:005:VMon           epics_det_hv_ch6               HA Moller HV Readback Ch 6 (V)
+IHVHAPOL:03:006:VMon           epics_det_hv_ch7               HA Moller HV Readback Ch 7 (V)
+IHVHAPOL:03:007:VMon           epics_det_hv_ch8               HA Moller HV Readback Ch 8 (V)
+pgunFreqDiv:A:frequencyVal     epics_halla_RFfreq             HA RF frequency (499.0 or 249.5 MHz)
+IGL0I00HVPSkVolts              epics_inj_gun_kV               Injector gun voltage (kV)
+HallAMolLock:Onoff             epics_hamoller_lock            HA Moller beam position lock On=1 Off=0
+psub_cx_pos                    epics_inj_spot_x               Injector spot x-position
+psub_cy_pos                    epics_inj_spot_y               Injector spot y-position
