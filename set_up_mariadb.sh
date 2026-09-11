@@ -176,7 +176,10 @@ CREATE TABLE IF NOT EXISTS EPICS_data (
     epics_E_inj              FLOAT(10,5) DEFAULT NULL COMMENT 'Injector energy, MeV [PV: MMSINJEGAIN]',
     epics_E_Slinac           FLOAT(10,5) DEFAULT NULL COMMENT 'South linac energy, MeV [PV: MMSLIN1EGAIN]',
     epics_E_Nlinac           FLOAT(10,5) DEFAULT NULL COMMENT 'North linac energy, MeV [PV: MMSLIN2EGAIN]',
-    epics_n_pass             VARCHAR(255) DEFAULT NULL COMMENT 'Passes Hall A [PV: MMSHLAPASS]',
+    epics_n_pass_hallA       VARCHAR(255) DEFAULT NULL COMMENT 'Passes Hall A [PV: MMSHLAPASS]',
+    epics_n_pass_hallB       VARCHAR(255) DEFAULT NULL COMMENT 'Passes Hall B [PV: MMSHLBPASS]',
+    epics_n_pass_hallC       VARCHAR(255) DEFAULT NULL COMMENT 'Passes Hall C [PV: MMSHLCPASS]',
+    epics_n_pass_hallD       VARCHAR(255) DEFAULT NULL COMMENT 'Passes Hall D [PV: MMSHLDPASS]',
 
     -- Beam Current Monitors (BCMs) & Unsers
     epics_bcm_avg            FLOAT(10,7) DEFAULT NULL COMMENT 'Beam Current Average [PV: hac_bcm_average]',
@@ -204,7 +207,8 @@ CREATE TABLE IF NOT EXISTS EPICS_data (
     epics_q3_cur             FLOAT(10,5) DEFAULT NULL COMMENT 'Quad Q3 (Amps) [PV: MQO1H03M]',
     epics_q4_cur             FLOAT(10,5) DEFAULT NULL COMMENT 'Quad Q4 (Amps) [PV: MQO1H03AM]',
     epics_dip_cur            FLOAT(10,5) DEFAULT NULL COMMENT 'Dipole (Amps) [PV: MMA1H01M]',
-    epics_mcz1h0v_cur        FLOAT(10,5) DEFAULT NULL COMMENT 'MCZ1H0V vertical corrector [PV: MBD1H04VM]',
+    epics_mcz1h04v_cur       FLOAT(10,5) DEFAULT NULL COMMENT 'MCZ1H04 vertical corrector [PV: MBD1H04VM]',
+    epics_mcz1h04h_cur       FLOAT(10,5) DEFAULT NULL COMMENT 'MCZ1H04 horizontal corrector [PV: MBD1H04HM]',
 
     -- Target System
     epics_tgt_foil           INT(11) DEFAULT NULL COMMENT 'Target selection ID / state',
@@ -245,6 +249,12 @@ CREATE TABLE IF NOT EXISTS EPICS_data (
     epics_pockels_v2         FLOAT(10,5) DEFAULT NULL COMMENT 'Pockels Cell Voltage 2 [PV: IGL1I00AI8]',
     epics_las_a_rf_phase     FLOAT(10,5) DEFAULT NULL COMMENT 'Laser A RF phase degrees [PV: R0L1PMES]',
     epics_las_a_src_cur      FLOAT(10,5) DEFAULT NULL COMMENT 'Laser A source current uA [PV: enlk4A:floatspare1]',
+    epics_halla_RFfreq       FLOAT(10,5) DEFAULT NULL COMMENT 'Hall A RF frequency (499.0 or 249.5 MHz) [PV: pgunFreqDiv:A:frequencyVal]',
+    epics_inj_gun_kV         FLOAT(10,5) DEFAULT NULL COMMENT 'Injector gun voltage (kV) [PV: IGL0I00HVPSkVolts]',
+    epics_hamoller_lock      TINYINT(1)  DEFAULT NULL COMMENT 'HA Moller beam position lock On=1 Off=0 [PV: HallAMolLock:Onoff]',
+    epics_inj_spot_x         FLOAT(10,5) DEFAULT NULL COMMENT 'Injector spot x-position [PV: psub_cx_pos]',
+    epics_inj_spot_y         FLOAT(10,5) DEFAULT NULL COMMENT 'Injector spot x-position [PV: psub_cy_pos]',
+
 
     -- Polarization & Wien Filters / Waveplates
     epics_ihwp               VARCHAR(16) DEFAULT NULL COMMENT 'Laser 1/2 wave plate [PV: IGL1I00OD16_16]',
