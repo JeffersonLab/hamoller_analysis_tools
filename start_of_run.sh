@@ -22,7 +22,7 @@ chmod 444 ${HAMOLLER_RUNLOG_DIR}/moller_readout_${RUN_NUMBER}.c
 # Query EPICS PVs and write PV name + value to output file
 # --------------------------------------------------------
 
-INPUT_FILE="epics/epics_pv_list.txt"
+INPUT_FILE="${HAMOLLER_TOOLS_DIR}/epics/epics_pv_list.txt"
 OUTPUT_FILE="${HAMOLLER_EPICS_DIR}/hamolpol_${RUN_NUMBER}.epics"
 
 # Empty output file

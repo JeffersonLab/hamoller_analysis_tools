@@ -60,8 +60,8 @@ void TTrain::SetUpTTrain(int run, const char* fnamebase, bool tchain)
    std::cout<<"Setting up TTrain for run "<< run <<std::endl;
    if(tchain) ch = new TChain("T");
    
-   for (int seg = 0; seg < 100; ++seg) {
-      for (int x = 0; x < 100; ++x) {
+   for (int seg = 0; seg < 1000; ++seg) {
+      for (int x = 0; x < 1000; ++x) {
 	 TString filename(Form("%s/%s%i.%i",
 			       gSystem->Getenv("HAMOLLER_ROOTFILE_DIR"),
 			       fnamebase, run, seg));

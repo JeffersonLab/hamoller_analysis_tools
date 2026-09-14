@@ -121,10 +121,10 @@ CREATE TABLE IF NOT EXISTS DAQ_config (
     fadc_allch_w_width   VARCHAR(255) DEFAULT NULL COMMENT 'Number of ns to include in trigger window set channel by channel',	
     fadc_allch_nsb       VARCHAR(255) DEFAULT NULL COMMENT 'Time (units: ns) before threshold crossing to include in integral set channel by channel', 
     fadc_allch_nsa       VARCHAR(255) DEFAULT NULL COMMENT 'Time (units: ns) after threshold crossing to include in integral set channel by channel', 
-    fadc_w_offset  SMALLINT UNSIGNED DEFAULT NULL COMMENT 'Number of ns back from trigger point set if equal for all channels', 
-    fadc_w_width   SMALLINT UNSIGNED DEFAULT NULL COMMENT 'Number of ns to include in trigger window set if equal for all channels', 
-    fadc_nsb       SMALLINT UNSIGNED DEFAULT NULL COMMENT 'Time (units: ns) before threshold crossing to include in integral set if equal for all channels', 
-    fadc_nsa       SMALLINT UNSIGNED DEFAULT NULL COMMENT 'Time (units: ns) after threshold crossing to include in integral set if equal for all channels', 
+    fadc_w_offset  SMALLINT DEFAULT NULL COMMENT 'Number of ns back from trigger point set if equal for all channels', 
+    fadc_w_width   SMALLINT DEFAULT NULL COMMENT 'Number of ns to include in trigger window set if equal for all channels', 
+    fadc_nsb       SMALLINT DEFAULT NULL COMMENT 'Time (units: ns) before threshold crossing to include in integral set if equal for all channels', 
+    fadc_nsa       SMALLINT DEFAULT NULL COMMENT 'Time (units: ns) after threshold crossing to include in integral set if equal for all channels', 
 
 
     -- Peak Processing & Pedestal Limits 
